@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+.env
+.DS_Store
+*.nc
+*.grib
+data/
+db.sqlite3
+.ipynb_checkpoints/

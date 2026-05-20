@@ -1,0 +1,46 @@
+name: tmy
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.12
+  - pandas
+  - numpy
+  - scipy
+  - matplotlib
+  - seaborn
+  - xarray
+  - dask
+  - cartopy
+  - shapely
+  - geopandas
+  - pvlib
+  - cdsapi
+  - cfgrib
+  - metpy
+  - scikit-learn
+  - statsmodels
+  - plotly
+  - bokeh
+  - jupyter
+  - jupyterlab
+  - netcdf4
+  - rasterio
+  - psycopg2
+  - pip:
+      - pvanalytics
+      - python-cmethods
+      - python-docx
+      - windrose
+      - pvlib
+      - openmeteo-requests
+      - openmeteo-sdk
+      - requests-cache
+      - retry-requests
+      - herbie-data
+      - django
+      - djangorestframework
+      - celery
+      - redis
+      - django-celery-results
+      - flower

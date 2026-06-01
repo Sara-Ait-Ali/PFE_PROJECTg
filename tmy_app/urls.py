@@ -1,10 +1,8 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import TMYJobViewSet
-
-router = DefaultRouter()
-router.register(r'jobs', TMYJobViewSet)
+from django.urls import path
+from .views import TMYSubmitView, TMYStatusView, TMYAllView
 
 urlpatterns = [
-    path('api/', include(router.urls)),
+    path('submit/',              TMYSubmitView.as_view()),
+    path('status/<int:job_id>/', TMYStatusView.as_view()),
+    path('all/',                 TMYAllView.as_view()),
 ]

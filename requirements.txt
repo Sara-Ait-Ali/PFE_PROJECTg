@@ -26,3 +26,6 @@ scipy
 seaborn
 tqdm
 requests
+papermill
+ipykernel
+jupyter

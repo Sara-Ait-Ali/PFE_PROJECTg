@@ -7,4 +7,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
+COPY .cdsapirc /root/.cdsapirc
+
 EXPOSE 8000

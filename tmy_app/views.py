@@ -33,9 +33,12 @@ from rest_framework.response import Response
 from .models import TMYJob
 from .serializers import TMYJobSerializer
 from .tasks import process_climate_job
+from django.contrib.auth.models import User
+from rest_framework.permissions import IsAuthenticated
 
 
 class TMYSubmitView(APIView):
+    permission_classes = [IsAuthenticated]
     def post(self, request):
         serializer = TMYJobSerializer(data=request.data)
         if serializer.is_valid():
@@ -52,6 +55,7 @@ class TMYSubmitView(APIView):
 
 
 class TMYStatusView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request, job_id):
         try:
             job = TMYJob.objects.get(id=job_id)
@@ -82,6 +86,7 @@ class TMYStatusView(APIView):
 
 
 class TMYAllView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         jobs = TMYJob.objects.all().order_by('-created_at')
         return Response({
@@ -102,3 +107,20 @@ class TMYAllView(APIView):
                 for j in jobs
             ]
         })
+        
+
+class RegisterView(APIView):
+    def post(self, request):
+        username = request.data.get('username')
+        email = request.data.get('email')
+        password = request.data.get('password')
+
+        if User.objects.filter(username=username).exists():
+            return Response({'error': 'Username already exists'}, status=400)
+
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password
+        )
+        return Response({'message': 'User created successfully'}, status=status.HTTP_201_CREATED)

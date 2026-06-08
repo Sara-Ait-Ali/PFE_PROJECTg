@@ -1,8 +1,8 @@
 from django.urls import path
-from .views import TMYSubmitView, TMYStatusView, TMYAllView
-
+from .views import TMYSubmitView, TMYStatusView, TMYAllView, RegisterView
 urlpatterns = [
-    path('submit/',              TMYSubmitView.as_view()),
+    path('submit/', TMYSubmitView.as_view()),
     path('status/<int:job_id>/', TMYStatusView.as_view()),
-    path('all/',                 TMYAllView.as_view()),
+    path('all/', TMYAllView.as_view()),
+    path('register/', RegisterView.as_view()),
 ]

@@ -28,4 +28,5 @@ tqdm
 requests
 papermill
 ipykernel
-jupyter
+djangorestframework-simplejwt
+django-cors-headers

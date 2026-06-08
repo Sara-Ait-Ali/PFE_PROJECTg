@@ -10,3 +10,4 @@ db.sqlite3
 Thumbs.db
 TMYenvironment.yml
 .cdsapirc
+frontend/.env.local

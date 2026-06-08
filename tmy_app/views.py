@@ -59,11 +59,16 @@ class TMYStatusView(APIView):
             return Response({'error': 'Job not found'}, status=404)
 
         messages = {
-            'pending':   'Job is waiting to start...',
-            'running':   'Papermill is running the notebook...',
-            'completed': 'TMY generation complete!',
-            'failed':    'Job failed. Check error_message.',
-        }
+    'pending':           'Job is waiting to start...',
+    'downloading_era5':  'Downloading ERA5 climate data from Copernicus CDS...',
+    'downloading_cams':  'Downloading CAMS solar radiation data from Copernicus ADS...',
+    'processing_data':   'Processing and merging ERA5 + CAMS datasets...',
+    'generating_tmy':    'Calculating Typical Meteorological Year (TMY)...',
+    'generating_report': 'Generating plots and Word report...',
+    'completed':         'TMY generation complete! Results ready to download.',
+    'failed':            'Job failed. Check error_message for details.',
+    'running':           'Job is currently running...',   
+}
 
         return Response({
             'job_id':        job.id,
@@ -73,7 +78,7 @@ class TMYStatusView(APIView):
             'start_year':    job.start_year,
             'end_year':      job.end_year,
             'status':        job.status,
-            'message':       messages.get(job.status, ''),
+            'message':       job.status_message or messages.get(job.status, ''),
             'result_folder': str(job.result_file) if job.result_file else None,
             'error':         job.error_message,
             'created_at':    job.created_at,
@@ -102,3 +107,25 @@ class TMYAllView(APIView):
                 for j in jobs
             ]
         })
+    
+class TMYInternalUpdateView(APIView):
+    """
+    Internal endpoint called from inside the notebook via requests.post()
+    to update job status during execution.
+    """
+    def post(self, request, job_id):
+        try:
+            job = TMYJob.objects.get(id=job_id)
+        except TMYJob.DoesNotExist:
+            return Response({'error': 'Job not found'}, status=404)
+
+        new_status  = request.data.get('status')
+        new_message = request.data.get('message', '')
+
+        TMYJob.objects.filter(id=job_id).update(
+            status=new_status,
+            status_message=new_message
+        )
+        print(f"[Internal Update] Job #{job_id} → {new_status}: {new_message}")
+
+        return Response({'ok': True, 'status': new_status})

@@ -112,8 +112,6 @@ class TMYAllView(APIView):
                 for j in jobs
             ]
         })
-<<<<<<< HEAD
-    
 class TMYInternalUpdateView(APIView):
     """
     Internal endpoint called from inside the notebook via requests.post()
@@ -125,18 +123,18 @@ class TMYInternalUpdateView(APIView):
         except TMYJob.DoesNotExist:
             return Response({'error': 'Job not found'}, status=404)
 
-        new_status  = request.data.get('status')
+        new_status = request.data.get('status')
         new_message = request.data.get('message', '')
 
         TMYJob.objects.filter(id=job_id).update(
             status=new_status,
             status_message=new_message
         )
+
         print(f"[Internal Update] Job #{job_id} → {new_status}: {new_message}")
 
         return Response({'ok': True, 'status': new_status})
-=======
-        
+
 
 class RegisterView(APIView):
     def post(self, request):
@@ -147,10 +145,13 @@ class RegisterView(APIView):
         if User.objects.filter(username=username).exists():
             return Response({'error': 'Username already exists'}, status=400)
 
-        user = User.objects.create_user(
+        User.objects.create_user(
             username=username,
             email=email,
             password=password
         )
-        return Response({'message': 'User created successfully'}, status=status.HTTP_201_CREATED)
->>>>>>> c5df8b7dfdd8ada626a862d0e02b98656188952c
+
+        return Response(
+            {'message': 'User created successfully'},
+            status=status.HTTP_201_CREATED
+        )

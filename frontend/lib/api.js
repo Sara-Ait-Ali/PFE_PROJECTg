@@ -5,11 +5,32 @@ const API = axios.create({
 });
 
 // Automatically attach token to every request
-API.interceptors.request.use((config) => {
-  const token = localStorage.getItem('access_token');
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
+API.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (error.response?.status === 401) {
+      const refresh = localStorage.getItem('refresh_token');
+      if (refresh) {
+        try {
+          const res = await axios.post(
+            'http://localhost:8080/api/auth/refresh/',
+            { refresh }
+          );
+          localStorage.setItem('access_token', res.data.access);
+          error.config.headers.Authorization = `Bearer ${res.data.access}`;
+          return API(error.config);
+        } catch (e) {
+          localStorage.clear();
+          window.location.href = '/login';
+        }
+      } else {
+        localStorage.clear();
+        window.location.href = '/login';
+      }
+    }
+    return Promise.reject(error);
+  }
+);
 
 // ── AUTH ──────────────────────────────
 export const registerUser = (data) => API.post('/api/tmy/register/', data);

@@ -44,7 +44,7 @@ class TMYSubmitView(APIView):
     def post(self, request):
         serializer = TMYJobSerializer(data=request.data)
         if serializer.is_valid():
-            job = serializer.save()
+            job = serializer.save(user=request.user)
             process_climate_job.delay(job.id)
             return Response({
                 'job_id':    job.id,
@@ -60,7 +60,8 @@ class TMYStatusView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request, job_id):
         try:
-            job = TMYJob.objects.get(id=job_id)
+            # job = TMYJob.objects.get(id=job_id)
+            job = TMYJob.objects.get(id=job_id, user=request.user)
         except TMYJob.DoesNotExist:
             return Response({'error': 'Job not found'}, status=404)
 
@@ -95,7 +96,8 @@ class TMYStatusView(APIView):
 class TMYAllView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
-        jobs = TMYJob.objects.all().order_by('-created_at')
+        # jobs = TMYJob.objects.all().order_by('-created_at')
+        jobs = TMYJob.objects.filter(user=request.user).order_by('-created_at')
         return Response({
             'total':     jobs.count(),
             'pending':   jobs.filter(status='pending').count(),

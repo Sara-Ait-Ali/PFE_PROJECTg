@@ -34,7 +34,7 @@ from .models import TMYJob
 from .serializers import TMYJobSerializer
 from .tasks import process_climate_job
 from django.contrib.auth.models import User
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated,AllowAny
 
 
 class TMYSubmitView(APIView):
@@ -117,6 +117,7 @@ class TMYInternalUpdateView(APIView):
     Internal endpoint called from inside the notebook via requests.post()
     to update job status during execution.
     """
+    permission_classes = [AllowAny] 
     def post(self, request, job_id):
         try:
             job = TMYJob.objects.get(id=job_id)

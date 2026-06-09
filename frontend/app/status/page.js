@@ -1,8 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { getJobStatus } from '@/lib/api';
-
+import { getJobStatus, downloadJob } from '@/lib/api';
 const STEPS = [
   { key: 'pending',           label: 'Job queued',              emoji: '⏳' },
   { key: 'downloading_era5',  label: 'Downloading ERA5 data',   emoji: '📡' },
@@ -88,6 +87,10 @@ export default function StatusPage() {
             {/* Stepper */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-6">
               <h3 className="font-semibold text-gray-700 mb-4">Processing Steps</h3>
+              {/* Real-time message — ADD HERE */}
+                {job.message && job.status !== 'completed' && job.status !== 'failed' && (
+                <p className="text-sm text-blue-600 mb-4 animate-pulse">{job.message}</p>
+                )}
               <div className="space-y-3">
                 {STEPS.filter(s => s.key !== 'failed').map((step, index) => {
                   const isDone = currentStepIndex > index;
@@ -106,7 +109,8 @@ export default function StatusPage() {
                         {step.label}
                       </span>
                       {isCurrent && job.status !== 'completed' && job.status !== 'failed' && (
-                        <span className="text-xs text-blue-500 animate-pulse">Running...</span>
+                        <span className="text-xs text-blue-500 animate-pulse">{job.message}</span>
+                        
                       )}
                     </div>
                   );
@@ -117,20 +121,36 @@ export default function StatusPage() {
             {/* Failed message */}
             {job.status === 'failed' && (
               <div className="bg-red-50 border border-red-200 rounded-2xl p-5 mb-6">
-                <p className="text-red-700 font-semibold mb-2">❌ Job Failed</p>
+                <p className="text-red-700 font-semibold mb-2"> Job Failed</p>
                 <p className="text-red-600 text-sm font-mono">{job.error}</p>
               </div>
             )}
 
             {/* Completed */}
             {job.status === 'completed' && (
-              <div className="bg-green-50 border border-green-200 rounded-2xl p-5 text-center">
-                <p className="text-green-700 font-bold text-lg mb-2">✅ TMY Generation Complete!</p>
+            <div className="bg-green-50 border border-green-200 rounded-2xl p-5 text-center">
+                <p className="text-green-700 font-bold text-lg mb-2"> TMY Generation Complete!</p>
                 <p className="text-green-600 text-sm mb-4">Your files are ready.</p>
-                <button className="bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 rounded-lg font-medium">
-                  📥 Download Results
+                <button
+                onClick={async () => {
+                    try {
+                    const res = await downloadJob(jobId);
+                    const url = window.URL.createObjectURL(new Blob([res.data]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', `TMY_${job.site_name}.zip`);
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                    } catch (err) {
+                    alert('Download failed. Please try again.');
+                    }
+                }}
+                className="bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 rounded-lg font-medium"
+                >
+                 Download Results
                 </button>
-              </div>
+            </div>
             )}
           </>
         )}

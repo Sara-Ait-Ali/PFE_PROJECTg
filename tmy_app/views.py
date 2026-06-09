@@ -35,7 +35,9 @@ from .serializers import TMYJobSerializer
 from .tasks import process_climate_job
 from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated,AllowAny
-
+import os
+import zipfile
+from django.http import FileResponse, HttpResponse
 
 class TMYSubmitView(APIView):
     permission_classes = [IsAuthenticated]
@@ -156,3 +158,37 @@ class RegisterView(APIView):
             {'message': 'User created successfully'},
             status=status.HTTP_201_CREATED
         )
+
+
+class TMYDownloadView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, job_id):
+        try:
+            job = TMYJob.objects.get(id=job_id)
+        except TMYJob.DoesNotExist:
+            return Response({'error': 'Job not found'}, status=404)
+        
+        if job.status != 'completed':
+            return Response({'error': 'Job not completed yet'}, status=400)
+        
+        result_folder = str(job.result_file)
+        
+        if not os.path.exists(result_folder):
+            return Response({'error': 'Result folder not found'}, status=404)
+        
+        # Create a zip of the result folder
+        zip_path = f'/tmp/TMY_{job.site_name}_{job_id}.zip'
+        with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+            for root, dirs, files in os.walk(result_folder):
+                for file in files:
+                    file_path = os.path.join(root, file)
+                    arcname = os.path.relpath(file_path, result_folder)
+                    zipf.write(file_path, arcname)
+        
+        response = FileResponse(
+            open(zip_path, 'rb'),
+            content_type='application/zip'
+        )
+        response['Content-Disposition'] = f'attachment; filename="TMY_{job.site_name}.zip"'
+        return response

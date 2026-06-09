@@ -1,0 +1,7 @@
+node_modules
+.next
+.git
+.ipynb_checkpoints
+*.nc
+*.csv
+__pycache__

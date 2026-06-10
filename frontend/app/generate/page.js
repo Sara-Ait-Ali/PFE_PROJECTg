@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { submitTMYJob } from '@/lib/api';
 
-// Load map only on client side (Leaflet doesn't work on server)
 const MapPicker = dynamic(() => import('@/components/MapPicker'), { ssr: false });
 
 export default function GeneratePage() {
@@ -19,18 +18,14 @@ export default function GeneratePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Redirect if not logged in
   useEffect(() => {
     if (!localStorage.getItem('access_token')) {
       router.push('/login');
     }
   }, []);
 
-  // When user clicks on map
   const handleMapClick = async (lat, lon) => {
     setForm({ ...form, latitude: lat.toFixed(6), longitude: lon.toFixed(6) });
-
-    // Auto-fill site name using reverse geocoding
     try {
       const res = await fetch(
         `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
@@ -70,161 +65,199 @@ export default function GeneratePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      {/* Header */}
-<div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-  
-  {/* Left */}
-  <h1 className="text-xl font-bold text-blue-800">
-    TMY Generator
-  </h1>
+    <div className="min-h-screen" style={{ background: '#F4FAE8'}}>
 
-  {/* Right */}
-  <div className="flex items-center gap-6">
-    
-    <button
-      onClick={() => router.push('/jobs')}
-      className="text-sm font-medium text-gray-600 hover:text-blue-700 transition"
-    >
-      📋 History
-    </button>
-
-    <button
-      onClick={() => {
-        localStorage.clear();
-        router.push('/login');
-      }}
-      className="text-sm font-medium text-red-500 hover:text-red-700 transition"
-    >
-      Logout
-    </button>
-
-  </div>
-
-</div>
-
-
-
-      <div className="max-w-6xl mx-auto p-6">
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">Generate TMY File</h2>
-        <p className="text-gray-500 mb-6">
-          Click on the map to select a location, or fill in the coordinates manually.
-        </p>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-          {/* MAP */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4">
-            <h3 className="font-semibold text-gray-700 mb-3"> Select Location</h3>
-            <div style={{ height: '420px' }}>
-              <MapPicker
-                lat={parseFloat(form.latitude) || null}
-                lon={parseFloat(form.longitude) || null}
-                onLocationSelect={handleMapClick}
-              />
+      {/* NAVBAR */}
+      <nav style={{background: '#FFFFFF',borderBottom: '2px solid #8DC63F', padding: '0 24px', height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', boxShadow: '0 1px 8px rgba(141,198,63,0.10)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {/* Back arrow */}
+          <button
+            onClick={() => router.back()}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px',color: '#6A9E28', fontWeight: 600, fontSize: '14px', background: 'none', border: 'none', cursor: 'pointer', padding: '6px 10px', borderRadius: '8px', transition: 'background 0.15s' }}
+            onMouseEnter={e => e.currentTarget.style.background = '#EAF5CE'}
+            onMouseLeave={e => e.currentTarget.style.background = 'none'}
+          >
+            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+            Back
+          </button>
+          <div style={{ width: '1px', height: '24px', background: '#C8E47A' }}/>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'linear-gradient(135deg, #8DC63F, #6A9E28)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ fontSize: '16px' }}>☀️</span>
             </div>
-            <p className="text-xs text-gray-400 mt-2">
-              Click anywhere on the map to set coordinates
-            </p>
+            <span style={{ fontWeight: 700, fontSize: '18px', color: '#4E7A1A' }}>TMY Generator</span>
+          </div>
+        </div>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <button
+            onClick={() => router.push('/jobs')}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#6A9E28', fontWeight: 500, fontSize: '14px', background: '#EAF5CE', border: '1px solid #C8E47A', padding: '6px 14px', borderRadius: '8px', cursor: 'pointer' }}
+          >
+            📋 History
+          </button>
+          <button
+            onClick={() => { localStorage.clear(); router.push('/login'); }}
+            style={{ color: '#9ca3af', fontWeight: 500, fontSize: '14px', background: 'none', border: 'none', cursor: 'pointer', padding: '6px 10px' }}
+          >
+            Logout
+          </button>
+        </div>
+      </nav>
+
+      {/* PAGE HEADER */}
+      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '32px 24px 0' }}>
+        <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ background: '#EAF5CE', color: '#6A9E28', fontSize: '12px', fontWeight: 600, padding: '3px 10px', borderRadius: '999px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>New Job</span>
+        </div>
+        <h1 style={{ fontSize: '28px', fontWeight: 800, color: '#4E7A1A', margin: '0 0 6px' }}>Generate TMY File</h1>
+        <p style={{ color: '#6b7280', fontSize: '15px', margin: 0 }}>
+          Click on the map to pick a location — coordinates and site name fill automatically.
+        </p>
+      </div>
+
+      {/* MAIN CONTENT */}
+      <div style={{ maxWidth: '1100px', margin: '24px auto', padding: '0 24px 40px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+
+        {/* MAP CARD */}
+        <div style={{ background: 'white', borderRadius: '20px', border: '1px solid #E5E7EB', boxShadow: '0 10px 30px rgba(141,198,63,0.08)', overflow: 'hidden' }}>
+          <div style={{ padding: '18px 20px 12px', borderBottom: '1px solid #EAF5CE', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#8DC63F' }}/>
+            <span style={{ fontWeight: 600, color: '#4E7A1A', fontSize: '15px' }}>Select Location</span>
+          </div>
+          <div style={{ height: '420px' }}>
+            <MapPicker
+              lat={parseFloat(form.latitude) || null}
+              lon={parseFloat(form.longitude) || null}
+              onLocationSelect={handleMapClick}
+            />
+          </div>
+          <div style={{ padding: '10px 20px', background: '#F4FAE8', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <svg width="14" height="14" fill="none" stroke="#8DC63F" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+            <span style={{ fontSize: '12px', color: '#6b7280' }}>Click anywhere on the map to set coordinates</span>
+          </div>
+        </div>
+
+        {/* FORM CARD */}
+        <div style={{ background: 'white', borderRadius: '20px', border: '1px solid #E5E7EB', boxShadow: '0 10px 30px rgba(141,198,63,0.08)', padding: '24px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
+            <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#8DC63F' }}/>
+            <span style={{ fontWeight: 600, color: '#4E7A1A', fontSize: '15px' }}>Job Parameters</span>
           </div>
 
-          {/* FORM */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-            <h3 className="font-semibold text-gray-700 mb-4">⚙️ Job Parameters</h3>
+          {error && (
+            <div style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626', padding: '10px 14px', borderRadius: '10px', fontSize: '13px', marginBottom: '16px' }}>
+              {error}
+            </div>
+          )}
 
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg mb-4 text-sm">
-                {error}
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+
+            {/* Site name */}
+            <div>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#374151', marginBottom: '6px' }}>Site Name</label>
+              <input
+                type="text"
+                required
+                value={form.site_name}
+                onChange={(e) => setForm({ ...form, site_name: e.target.value })}
+                placeholder="e.g. Marrakech-Morocco"
+                style={{ width: '100%', border: '1.5px solid #D1D5DB', borderRadius: '10px', padding: '10px 14px', fontSize: '14px', color: '#1f2937', outline: 'none', boxSizing: 'border-box', transition: 'border 0.15s' }}
+                onFocus={e => e.target.style.border = '1.5px solid #8DC63F'}
+                onBlur={e => e.target.style.border = '1.5px solid #C8E47A'}
+              />
+            </div>
+
+            {/* Lat / Lon */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#374151', marginBottom: '6px' }}>Latitude</label>
+                <input
+                  type="number" step="any" required
+                  value={form.latitude}
+                  onChange={(e) => setForm({ ...form, latitude: e.target.value })}
+                  placeholder="31.6295"
+                  style={{ width: '100%', border: '1.5px solid #D1D5DB', borderRadius: '10px', padding: '10px 14px', fontSize: '14px', color: '#1f2937', outline: 'none', boxSizing: 'border-box' }}
+                  onFocus={e => e.target.style.border = '1.5px solid #8DC63F'}
+                  onBlur={e => e.target.style.border = '1.5px solid #C8E47A'}
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#374151', marginBottom: '6px' }}>Longitude</label>
+                <input
+                  type="number" step="any" required
+                  value={form.longitude}
+                  onChange={(e) => setForm({ ...form, longitude: e.target.value })}
+                  placeholder="-7.9811"
+                  style={{ width: '100%', border: '1.5px solid #D1D5DB', borderRadius: '10px', padding: '10px 14px', fontSize: '14px', color: '#1f2937', outline: 'none', boxSizing: 'border-box' }}
+                  onFocus={e => e.target.style.border = '1.5px solid #8DC63F'}
+                  onBlur={e => e.target.style.border = '1.5px solid #C8E47A'}
+                />
+              </div>
+            </div>
+
+            {/* Years */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#374151', marginBottom: '6px' }}>Start Year</label>
+                <input
+                  type="number" required min="2000" max="2023"
+                  value={form.start_year}
+                  onChange={(e) => setForm({ ...form, start_year: e.target.value })}
+                  style={{ width: '100%', border: '1.5px solid #D1D5DB', borderRadius: '10px', padding: '10px 14px', fontSize: '14px', color: '#1f2937', outline: 'none', boxSizing: 'border-box' }}
+                  onFocus={e => e.target.style.border = '1.5px solid #8DC63F'}
+                  onBlur={e => e.target.style.border = '1.5px solid #C8E47A'}
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#374151', marginBottom: '6px' }}>End Year</label>
+                <input
+                  type="number" required min="2000" max="2024"
+                  value={form.end_year}
+                  onChange={(e) => setForm({ ...form, end_year: e.target.value })}
+                  style={{ width: '100%', border: '1.5px solid #D1D5DB', borderRadius: '10px', padding: '10px 14px', fontSize: '14px', color: '#1f2937', outline: 'none', boxSizing: 'border-box' }}
+                  onFocus={e => e.target.style.border = '1.5px solid #8DC63F'}
+                  onBlur={e => e.target.style.border = '1.5px solid #C8E47A'}
+                />
+              </div>
+            </div>
+
+            {/* Selected location preview */}
+            {form.latitude && form.longitude && (
+              <div style={{ background: '#F4FAE8', border: '1px solid #C8E47A', borderRadius: '10px', padding: '10px 14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '16px' }}>📍</span>
+                <div>
+                  <div style={{ fontSize: '12px', color: '#6b7280' }}>Selected coordinates</div>
+                  <div style={{ fontSize: '13px', fontWeight: 600, color: '#4E7A1A', fontFamily: 'monospace' }}>{form.latitude}, {form.longitude}</div>
+                </div>
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Site Name
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={form.site_name}
-                  onChange={(e) => setForm({ ...form, site_name: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="e.g. Marrakech-Morocco"
-                />
-              </div>
+            {/* Submit button */}
+            <button
+              type="submit"
+              disabled={loading || !form.latitude || !form.longitude}
+              style={{
+                width: '100%',
+                padding: '13px',
+                borderRadius: '12px',
+                border: 'none',
+                cursor: loading || !form.latitude || !form.longitude ? 'not-allowed' : 'pointer',
+                fontSize: '15px',
+                fontWeight: 700,
+                color: 'white',
+                background: loading || !form.latitude || !form.longitude
+                  ? '#C8E47A'
+                  : 'linear-gradient(135deg, #8DC63F, #6A9E28)',
+                boxShadow: loading || !form.latitude || !form.longitude ? 'none' : '0 4px 14px rgba(141,198,63,0.40)',
+                transition: 'all 0.2s',
+                marginTop: '4px',
+                letterSpacing: '0.01em'
+              }}
+            >
+              {loading ? '⏳ Submitting...' : '🚀 Generate TMY File'}
+            </button>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Latitude
-                  </label>
-                  <input
-                    type="number"
-                    step="any"
-                    required
-                    value={form.latitude}
-                    onChange={(e) => setForm({ ...form, latitude: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="31.6295"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Longitude
-                  </label>
-                  <input
-                    type="number"
-                    step="any"
-                    required
-                    value={form.longitude}
-                    onChange={(e) => setForm({ ...form, longitude: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="-7.9811"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Start Year
-                  </label>
-                  <input
-                    type="number"
-                    required
-                    min="2000"
-                    max="2023"
-                    value={form.start_year}
-                    onChange={(e) => setForm({ ...form, start_year: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    End Year
-                  </label>
-                  <input
-                    type="number"
-                    required
-                    min="2000"
-                    max="2024"
-                    value={form.end_year}
-                    onChange={(e) => setForm({ ...form, end_year: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading || !form.latitude || !form.longitude}
-                className="w-full bg-blue-700 hover:bg-blue-800 text-white font-medium py-3 rounded-lg transition disabled:opacity-50 mt-2"
-              >
-                {loading ? ' Submitting...' : ' Generate TMY'}
-              </button>
-            </form>
-          </div>
+          </form>
         </div>
       </div>
     </div>

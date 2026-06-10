@@ -3,26 +3,26 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getAllJobs } from '@/lib/api';
 
-const STATUS_COLORS = {
-  pending:           'bg-yellow-100 text-yellow-700',
-  downloading_era5:  'bg-blue-100 text-blue-700',
-  downloading_cams:  'bg-blue-100 text-blue-700',
-  processing_data:   'bg-purple-100 text-purple-700',
-  generating_tmy:    'bg-indigo-100 text-indigo-700',
-  generating_report: 'bg-indigo-100 text-indigo-700',
-  completed:         'bg-green-100 text-green-700',
-  failed:            'bg-red-100 text-red-700',
+const G = '#8DC63F';
+const GD = '#5a8a1f';
+const GL = '#f4faeb';
+const GB = '#c5e08a';
+
+const STATUS_STYLES = {
+  pending:           { bg: '#fefce8', color: '#a16207' },
+  downloading_era5:  { bg: '#eff6ff', color: '#1d4ed8' },
+  downloading_cams:  { bg: '#eff6ff', color: '#1d4ed8' },
+  processing_data:   { bg: '#faf5ff', color: '#7c3aed' },
+  generating_tmy:    { bg: '#eef2ff', color: '#4338ca' },
+  generating_report: { bg: '#eef2ff', color: '#4338ca' },
+  completed:         { bg: '#f4faeb', color: GD },
+  failed:            { bg: '#fef2f2', color: '#dc2626' },
 };
 
 const STATUS_EMOJI = {
-  pending:           '⏳',
-  downloading_era5:  '📡',
-  downloading_cams:  '☀️',
-  processing_data:   '⚙️',
-  generating_tmy:    '📊',
-  generating_report: '📝',
-  completed:         '✅',
-  failed:            '❌',
+  pending: '⏳', downloading_era5: '📡', downloading_cams: '☀️',
+  processing_data: '⚙️', generating_tmy: '📊', generating_report: '📝',
+  completed: '✅', failed: '❌',
 };
 
 export default function JobsPage() {
@@ -32,14 +32,13 @@ export default function JobsPage() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    if (!localStorage.getItem('access_token')) {
-      router.push('/login');
-      return;
-    }
+    if (!localStorage.getItem('access_token')) { router.push('/login'); return; }
     fetchJobs();
   }, []);
 
   const fetchJobs = async () => {
+    setLoading(true);
+    setError('');
     try {
       const res = await getAllJobs();
       setJobs(res.data.jobs);
@@ -51,101 +50,125 @@ export default function JobsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
-        <h1 className="text-xl font-bold text-blue-800">TMY Generator</h1>
-        <div className="flex gap-4 items-center">
+    <div style={{ minHeight: '100vh', background: `linear-gradient(135deg, ${GL} 0%, #eaf5d0 50%, ${GL} 100%)` }}>
+
+      {/* NAVBAR */}
+      <nav style={{ background: 'white', borderBottom: `1px solid ${GB}`, padding: '0 24px', height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', boxShadow: '0 1px 8px rgba(141,198,63,0.07)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <button
+            onClick={() => router.back()}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px', color: G, fontWeight: 600, fontSize: '14px', background: 'none', border: 'none', cursor: 'pointer', padding: '6px 10px', borderRadius: '8px' }}
+            onMouseEnter={e => e.currentTarget.style.background = GL}
+            onMouseLeave={e => e.currentTarget.style.background = 'none'}
+          >
+            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+            Back
+          </button>
+          <div style={{ width: '1px', height: '24px', background: GB }}/>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: `linear-gradient(135deg, ${G}, #a8d85a)`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ fontSize: '16px' }}>☀️</span>
+            </div>
+            <span style={{ fontWeight: 700, fontSize: '18px', color: GD }}>TMY Generator</span>
+          </div>
+        </div>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
           <button
             onClick={() => router.push('/generate')}
-            className="text-sm bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded-lg"
+            style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'white', fontWeight: 600, fontSize: '14px', background: `linear-gradient(135deg, ${G}, ${GD})`, border: 'none', padding: '8px 16px', borderRadius: '10px', cursor: 'pointer', boxShadow: '0 2px 8px rgba(141,198,63,0.3)' }}
           >
             + New Job
           </button>
           <button
             onClick={() => { localStorage.clear(); router.push('/login'); }}
-            className="text-sm text-gray-500 hover:text-red-500"
+            style={{ color: '#9ca3af', fontWeight: 500, fontSize: '14px', background: 'none', border: 'none', cursor: 'pointer', padding: '6px 10px' }}
           >
             Logout
           </button>
         </div>
-      </div>
+      </nav>
 
-      <div className="max-w-5xl mx-auto p-6">
-        <div className="flex justify-between items-center mb-6">
+      {/* CONTENT */}
+      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '32px 24px' }}>
+
+        {/* Header row */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
           <div>
-            <h2 className="text-2xl font-bold text-gray-800">Jobs History</h2>
-            <p className="text-gray-500 text-sm mt-1">All your TMY generation requests</p>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: '#eaf5d0', color: G, fontSize: '12px', fontWeight: 600, padding: '3px 10px', borderRadius: '999px', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              📋 History
+            </div>
+            <h1 style={{ fontSize: '26px', fontWeight: 800, color: '#14532d', margin: '0 0 4px' }}>Jobs History</h1>
+            <p style={{ color: '#6b7280', fontSize: '14px', margin: 0 }}>All your TMY generation requests</p>
           </div>
           <button
             onClick={fetchJobs}
-            className="text-sm text-blue-600 hover:underline"
+            style={{ display: 'flex', alignItems: 'center', gap: '6px', color: G, fontWeight: 500, fontSize: '14px', background: 'white', border: `1px solid ${GB}`, padding: '8px 14px', borderRadius: '10px', cursor: 'pointer' }}
           >
             🔄 Refresh
           </button>
         </div>
 
+        {/* Error */}
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg mb-6">
+          <div style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626', padding: '12px 16px', borderRadius: '12px', marginBottom: '20px', fontSize: '14px' }}>
             {error}
           </div>
         )}
 
+        {/* Loading */}
         {loading && (
-          <div className="text-center text-gray-400 py-12">Loading...</div>
+          <div style={{ textAlign: 'center', color: '#9ca3af', padding: '60px 0', fontSize: '15px' }}>
+            Loading your jobs...
+          </div>
         )}
 
-        {!loading && jobs.length === 0 && (
-          <div className="text-center py-16 bg-white rounded-2xl border border-gray-200">
-            <p className="text-gray-400 text-lg mb-4">No jobs yet</p>
+        {/* Empty state */}
+        {!loading && jobs.length === 0 && !error && (
+          <div style={{ background: 'white', border: `1px solid ${GB}`, borderRadius: '20px', padding: '60px 20px', textAlign: 'center', boxShadow: '0 4px 24px rgba(141,198,63,0.08)' }}>
+            <div style={{ fontSize: '48px', marginBottom: '16px' }}>🌍</div>
+            <p style={{ color: '#9ca3af', fontSize: '16px', marginBottom: '20px' }}>No jobs yet</p>
             <button
               onClick={() => router.push('/generate')}
-              className="bg-blue-700 text-white px-6 py-2.5 rounded-lg text-sm font-medium"
+              style={{ background: `linear-gradient(135deg, ${G}, ${GD})`, color: 'white', border: 'none', padding: '10px 24px', borderRadius: '12px', fontSize: '14px', fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 14px rgba(141,198,63,0.35)' }}
             >
-              Generate your first TMY
+              🚀 Generate your first TMY
             </button>
           </div>
         )}
 
+        {/* Table */}
         {!loading && jobs.length > 0 && (
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b border-gray-200">
-                <tr>
-                  <th className="text-left px-5 py-3 text-gray-600 font-semibold">ID</th>
-                  <th className="text-left px-5 py-3 text-gray-600 font-semibold">Site</th>
-                  <th className="text-left px-5 py-3 text-gray-600 font-semibold">Coordinates</th>
-                  <th className="text-left px-5 py-3 text-gray-600 font-semibold">Period</th>
-                  <th className="text-left px-5 py-3 text-gray-600 font-semibold">Status</th>
-                  <th className="text-left px-5 py-3 text-gray-600 font-semibold">Date</th>
-                  <th className="text-left px-5 py-3 text-gray-600 font-semibold">Action</th>
+          <div style={{ background: 'white', borderRadius: '20px', border: `1px solid ${GB}`, boxShadow: '0 4px 24px rgba(141,198,63,0.08)', overflow: 'hidden' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
+              <thead>
+                <tr style={{ background: GL, borderBottom: `1px solid ${GB}` }}>
+                  {['ID', 'Site', 'Coordinates', 'Period', 'Status', 'Date', 'Action'].map(h => (
+                    <th key={h} style={{ textAlign: 'left', padding: '12px 18px', color: GD, fontWeight: 700, fontSize: '13px' }}>{h}</th>
+                  ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
-                {jobs.map((job) => (
-                  <tr key={job.id} className="hover:bg-gray-50 transition">
-                    <td className="px-5 py-4 text-gray-500 font-mono">#{job.id}</td>
-                    <td className="px-5 py-4 font-medium text-gray-800">{job.site_name}</td>
-                    <td className="px-5 py-4 text-gray-500">
-                      {job.latitude}, {job.longitude}
-                    </td>
-                    <td className="px-5 py-4 text-gray-500">
-                      {job.start_year} → {job.end_year}
-                    </td>
-                    <td className="px-5 py-4">
-                      <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${STATUS_COLORS[job.status] || 'bg-gray-100 text-gray-600'}`}>
+              <tbody>
+                {jobs.map((job, i) => (
+                  <tr key={job.id} style={{ borderBottom: i < jobs.length - 1 ? `1px solid ${GL}` : 'none', transition: 'background 0.15s' }}
+                    onMouseEnter={e => e.currentTarget.style.background = GL}
+                    onMouseLeave={e => e.currentTarget.style.background = 'white'}
+                  >
+                    <td style={{ padding: '14px 18px', color: '#9ca3af', fontFamily: 'monospace', fontWeight: 600 }}>#{job.id}</td>
+                    <td style={{ padding: '14px 18px', fontWeight: 600, color: '#1f2937' }}>{job.site_name}</td>
+                    <td style={{ padding: '14px 18px', color: '#6b7280', fontFamily: 'monospace', fontSize: '13px' }}>{job.latitude}, {job.longitude}</td>
+                    <td style={{ padding: '14px 18px', color: '#6b7280' }}>{job.start_year} → {job.end_year}</td>
+                    <td style={{ padding: '14px 18px' }}>
+                      <span style={{ padding: '4px 10px', borderRadius: '999px', fontSize: '12px', fontWeight: 600, background: STATUS_STYLES[job.status]?.bg || '#f3f4f6', color: STATUS_STYLES[job.status]?.color || '#6b7280' }}>
                         {STATUS_EMOJI[job.status]} {job.status}
                       </span>
                     </td>
-                    <td className="px-5 py-4 text-gray-500">
-                      {new Date(job.created_at).toLocaleDateString('en-GB', {
-                        day: '2-digit', month: 'short', year: 'numeric'
-                      })}
+                    <td style={{ padding: '14px 18px', color: '#6b7280', fontSize: '13px' }}>
+                      {new Date(job.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                     </td>
-                    <td className="px-5 py-4">
+                    <td style={{ padding: '14px 18px' }}>
                       <button
                         onClick={() => router.push(`/status?job_id=${job.id}`)}
-                        className="text-blue-600 hover:underline text-sm"
+                        style={{ color: G, fontWeight: 600, fontSize: '13px', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}
                       >
                         View →
                       </button>

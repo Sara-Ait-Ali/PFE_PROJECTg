@@ -31,6 +31,7 @@ from django.db import models
 from django.contrib.auth.models import User  # ← ADD THIS
 
 class TMYJob(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     STATUS_CHOICES = [
         ('pending',           'Pending'),
         ('running',           'Running'), 

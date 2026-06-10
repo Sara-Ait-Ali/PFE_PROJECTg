@@ -880,6 +880,7 @@ export default function HomePage() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
 
+  
   const GRN   = '#7dc142';
   const DGRN  = '#3a6b1a';
 

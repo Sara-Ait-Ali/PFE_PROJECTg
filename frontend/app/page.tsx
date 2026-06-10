@@ -771,7 +771,6 @@
 //   );
 // }
 
-
 'use client';
 
 import Link from 'next/link';
@@ -783,10 +782,10 @@ import {
 } from 'lucide-react';
 
 /* ── Green Energy Park brand colors ──
-   primary:  #5cb85c  (medium grass green)
-   dark:     #2d6a2d  (deep forest green)
-   light:    #e8f5e9  (mint tint)
-   accent:   #8bc34a  (lime highlight)
+   primary:  #7dc142  (lime grass green — matches logo)
+   dark:     #3a6b1a  (deep forest green)
+   light:    #f0f7e8  (baby green tint)
+   accent:   #a0d060  (light lime)
 */
 
 /* ─── CAROUSEL — scrolls ONLY inside its own container ─── */
@@ -839,13 +838,13 @@ function ClimateCarousel() {
             onClick={() => { clearInterval(timerRef.current); goTo(i); }}
             className="snap-center flex-none w-72 md:w-96 rounded-2xl overflow-hidden cursor-pointer transition-all duration-300"
             style={{
-              boxShadow: active === i ? '0 0 0 4px #5cb85c' : 'none',
+              boxShadow: active === i ? '0 0 0 4px #7dc142' : 'none',
               transform:  active === i ? 'scale(1.02)' : 'scale(1)',
               opacity:    active === i ? 1 : 0.75,
             }}
           >
             <div className="relative h-52 flex items-center justify-center"
-              style={{ background: 'linear-gradient(135deg, #2d6a2d, #5cb85c)' }}>
+              style={{ background: 'linear-gradient(135deg, #3a6b1a, #7dc142)' }}>
               <img src={s.src} alt={s.label}
                 className="w-full h-full object-cover absolute inset-0"
                 onError={(e) => { e.target.style.display = 'none'; }} />
@@ -867,7 +866,7 @@ function ClimateCarousel() {
             style={{
               width:  active === i ? '24px' : '8px',
               height: '8px',
-              background: active === i ? '#5cb85c' : '#cbd5e1',
+              background: active === i ? '#7dc142' : '#cbd5e1',
             }} />
         ))}
       </div>
@@ -881,8 +880,9 @@ export default function HomePage() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
 
-  const GRN   = '#5cb85c';
-  const DGRN  = '#2d6a2d';
+  
+  const GRN   = '#7dc142';
+  const DGRN  = '#3a6b1a';
 
   return (
     <main className="min-h-screen bg-slate-50 font-sans">
@@ -925,7 +925,7 @@ export default function HomePage() {
 
       {/* ══════════ HERO ══════════ */}
       <section className="relative overflow-hidden text-white"
-        style={{ background: `linear-gradient(135deg, #0f2d0f 0%, ${DGRN} 50%, #1a4d1a 100%)` }}>
+        style={{ background: `linear-gradient(135deg, #2d5a1b 0%, #4a8c20 50%, #3a7018 100%)` }}>
 
         <div className="absolute inset-0 opacity-20"
           style={{ backgroundImage: `radial-gradient(circle at 15% 50%, ${GRN} 0%, transparent 55%), radial-gradient(circle at 85% 20%, #8bc34a 0%, transparent 45%)` }} />
@@ -1012,7 +1012,7 @@ export default function HomePage() {
       </section>
 
       {/* ══════════ HOW IT WORKS ══════════ */}
-      <section id="how" className="py-24" style={{ background: 'linear-gradient(135deg, #e8f5e9, #f1f8e9)' }}>
+      <section id="how" className="py-24" style={{ background: 'linear-gradient(135deg, #f0f7e8, #f5faf0)' }}>
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-14">
             <p className="font-semibold text-sm uppercase tracking-widest mb-2" style={{ color: GRN }}>Process</p>
@@ -1053,7 +1053,7 @@ export default function HomePage() {
       </section>
 
       {/* ══════════ APPLICATIONS ══════════ */}
-      <section className="py-24" style={{ background: '#f7f3eb' }}>
+      <section className="py-24" style={{ background: '#f9f7f2' }}>
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-14">
             <p className="font-semibold text-sm uppercase tracking-widest mb-2" style={{ color: GRN }}>Use cases</p>
@@ -1134,21 +1134,35 @@ export default function HomePage() {
       </section>
 
       {/* ══════════ CTA ══════════ */}
-      <section className="text-white py-20"
-        style={{ background: `linear-gradient(135deg, ${DGRN}, ${GRN})` }}>
+      <div style={{ background: '#f9f7f2', paddingBottom: '0' }}>
+        <div style={{
+          height: '80px',
+          background: `linear-gradient(135deg, #4a8c20, #7dc142)`,
+          clipPath: 'ellipse(55% 100% at 50% 100%)',
+          marginBottom: '-2px'
+        }} />
+      </div>
+      <section className="text-white pt-16 pb-20"
+        style={{ background: `linear-gradient(135deg, #4a8c20, #7dc142)` }}>
         <div className="max-w-4xl mx-auto text-center px-6">
           <h2 className="text-5xl font-black">Ready to generate climate data?</h2>
-          <p className="mt-4 text-lg" style={{ color: '#c8e6c8' }}>Start your first TMY in under 5 minutes.</p>
+          <p className="mt-4 text-lg" style={{ color: '#d4f0b0' }}>Start your first TMY in under 5 minutes.</p>
           <Link href="/generate"
             className="inline-flex items-center gap-2 bg-white font-bold px-8 py-4 rounded-xl mt-8 transition hover:bg-slate-100 shadow-lg"
-            style={{ color: DGRN }}>
+            style={{ color: '#3a6b1a' }}>
             Start Now <ArrowRight />
           </Link>
         </div>
       </section>
 
+      {/* White gap between green CTA and dark footer */}
+      <div style={{ height: '60px', background: '#ffffff' }} />
+
+      {/* Gap between CTA and footer */}
+      <div style={{ height: '48px', background: '#1e1e14' }} />
+
       {/* ══════════ FOOTER ══════════ */}
-      <footer style={{ background: '#2a2a1e' }} className="text-slate-300">
+      <footer style={{ background: '#1e1e14' }} className="text-slate-300">
 
         {/* Sponsors */}
         <div style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
@@ -1241,6 +1255,12 @@ export default function HomePage() {
 
       <style jsx global>{`
         *::-webkit-scrollbar { display: none; }
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(24px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .fade-up { animation: fadeUp 0.6s ease both; }
+        section { transition: background 0.3s ease; }
       `}</style>
 
     </main>

@@ -214,18 +214,20 @@ export default function StatusPage() {
                 <button
                   onClick={async () => {
                     try {
-                      const res = await downloadJob(jobId);
-                      const url = window.URL.createObjectURL(new Blob([res.data]));
-                      const link = document.createElement('a');
-                      link.href = url;
-                      link.setAttribute('download', `TMY_${job.site_name}.zip`);
-                      document.body.appendChild(link);
-                      link.click();
-                      link.remove();
+                        const response = await downloadJob(jobId);
+                        const blob = await response.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.setAttribute('download', `TMY_${job.site_name}.zip`);
+                        document.body.appendChild(link);
+                        link.click();
+                        link.remove();
+                        window.URL.revokeObjectURL(url);
                     } catch (err) {
-                      alert('Download failed. Please try again.');
+                        alert('Download failed. Please try again.');
                     }
-                  }}
+                    }}
                   style={{ background: `linear-gradient(135deg, ${G}, ${GD})`, color: 'white', border: 'none', padding: '12px 32px', borderRadius: '12px', fontSize: '15px', fontWeight: 700, cursor: 'pointer', boxShadow: `0 4px 14px rgba(141,198,63,0.35)` }}
                   onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
                   onMouseLeave={e => e.currentTarget.style.opacity = '1'}

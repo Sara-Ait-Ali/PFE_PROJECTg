@@ -969,14 +969,14 @@ export default function HomePage() {
               </Link>
             </div>
 
-            <div className="flex flex-wrap gap-8 mt-14 pt-8" style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+            {/* <div className="flex flex-wrap gap-8 mt-14 pt-8" style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }}>
               {[['20+','Years of climate data'],['4','Export formats'],['∞','Global coverage']].map(([n,l]) => (
                 <div key={l}>
                   <div className="text-3xl font-black" style={{ color: GRN }}>{n}</div>
                   <div className="text-sm mt-1" style={{ color: '#8aaa8a' }}>{l}</div>
                 </div>
               ))}
-            </div>
+            </div> */}
 
           </div>
         </div>
@@ -1233,7 +1233,7 @@ export default function HomePage() {
           <div className="max-w-7xl mx-auto px-6 py-5 flex flex-col md:flex-row justify-between items-center gap-2 text-xs"
             style={{ color: '#908060' }}>
             <p>© 2026 ClimaSphere — Green Energy Park</p>
-            <p>Built with Next.js · Django · ERA5 · CAMS</p>
+            
           </div>
         </div>
 

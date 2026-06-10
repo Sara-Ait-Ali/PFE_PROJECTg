@@ -44,7 +44,7 @@ class TMYSubmitView(APIView):
     def post(self, request):
         serializer = TMYJobSerializer(data=request.data)
         if serializer.is_valid():
-            job = serializer.save(user=request.user)  # ← add user here
+            job = serializer.save(user=request.user)
             process_climate_job.delay(job.id)
             return Response({
                 'job_id':    job.id,
@@ -60,6 +60,7 @@ class TMYStatusView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request, job_id):
         try:
+            # job = TMYJob.objects.get(id=job_id)
             job = TMYJob.objects.get(id=job_id, user=request.user)
         except TMYJob.DoesNotExist:
             return Response({'error': 'Job not found'}, status=404)
@@ -95,6 +96,7 @@ class TMYStatusView(APIView):
 class TMYAllView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
+        # jobs = TMYJob.objects.all().order_by('-created_at')
         jobs = TMYJob.objects.filter(user=request.user).order_by('-created_at')
         return Response({
             'total':     jobs.count(),
@@ -103,20 +105,19 @@ class TMYAllView(APIView):
             'completed': jobs.filter(status='completed').count(),
             'failed':    jobs.filter(status='failed').count(),
             'jobs': [
-                {
-                    'id':         j.id,
-                    'site_name':  j.site_name,
-                    'latitude':   j.latitude,
-                    'longitude':  j.longitude,
-                    'status':     j.status,
-                    'start_year': j.start_year,
-                    'end_year':   j.end_year,
-                    'created_at': str(j.created_at),
-                }
-                for j in jobs
-            ]
+    {
+        'id':         j.id,
+        'site_name':  j.site_name,
+        'latitude':   j.latitude,
+        'longitude':  j.longitude,
+        'status':     j.status,
+        'start_year': j.start_year,
+        'end_year':   j.end_year,
+        'created_at': str(j.created_at),
+    }
+    for j in jobs
+]
         })
-        
 class TMYInternalUpdateView(APIView):
     """
     Internal endpoint called from inside the notebook via requests.post()

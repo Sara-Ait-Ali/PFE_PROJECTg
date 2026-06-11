@@ -127,11 +127,15 @@ export const getJobStatus = (jobId) => API.get(`/api/tmy/status/${jobId}/`);
 export const getAllJobs = () => API.get('/api/tmy/all/');
 
 // ── DOWNLOAD (uses fetch, not axios, for binary files) ──
-export const downloadJob = async (jobId) => {
-  const token = localStorage.getItem('access_token');
-  const response = await fetch(`http://localhost:8080/api/tmy/download/${jobId}/`, {
-    headers: { 'Authorization': `Bearer ${token}` },
-  });
-  if (!response.ok) throw new Error('Download failed');
-  return response;
-};
+// export const downloadJob = async (jobId) => {
+//   const token = localStorage.getItem('access_token');
+//   const response = await fetch(`http://localhost:8080/api/tmy/download/${jobId}/`, {
+//     headers: { 'Authorization': `Bearer ${token}` },
+//   });
+//   if (!response.ok) throw new Error('Download failed');
+//   return response;
+// };
+
+
+export const downloadJob = (jobId) =>
+  API.get(`/api/tmy/download/${jobId}/`, { responseType: 'blob' });

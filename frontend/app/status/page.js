@@ -214,16 +214,16 @@ export default function StatusPage() {
                 <button
                   onClick={async () => {
                     try {
-                        const response = await downloadJob(jobId);
-                        const blob = await response.blob();
-                        const url = window.URL.createObjectURL(blob);
-                        const link = document.createElement('a');
-                        link.href = url;
-                        link.setAttribute('download', `TMY_${job.site_name}.zip`);
-                        document.body.appendChild(link);
-                        link.click();
-                        link.remove();
-                        window.URL.revokeObjectURL(url);
+                        // ✅ CORRECT - handles blob response from axios
+const res = await downloadJob(jobId);
+const url = window.URL.createObjectURL(new Blob([res.data]));
+const link = document.createElement('a');
+link.href = url;
+link.setAttribute('download', `TMY_${job.site_name}.zip`);
+document.body.appendChild(link);
+link.click();
+link.remove();
+window.URL.revokeObjectURL(url);
                     } catch (err) {
                         alert('Download failed. Please try again.');
                     }

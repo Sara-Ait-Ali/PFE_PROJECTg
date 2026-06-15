@@ -798,20 +798,31 @@ function ClimateCarousel() {
     { id: 5, label: 'Building Simulation',    caption: 'Energy Performance Studies',src: '/carousel/building-sim.jpg' },
   ];
 
-  const trackRef  = useRef(null);
-  const timerRef  = useRef(null);
+  const trackRef = useRef<HTMLDivElement | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [active, setActive] = useState(0);
 
   /* scroll INSIDE the track div — never touches window scroll */
-  const goTo = (i) => {
-    const track = trackRef.current;
-    if (!track) return;
-    const card = track.children[i];
-    if (!card) return;
-    const offset = card.offsetLeft - track.offsetLeft - (track.clientWidth / 2) + (card.clientWidth / 2);
-    track.scrollTo({ left: offset, behavior: 'smooth' });
-    setActive(i);
-  };
+  const goTo = (i: number) => {
+  const track = trackRef.current;
+  if (!track) return;
+
+  const card = track.children[i] as HTMLElement;
+  if (!card) return;
+
+  const offset =
+    card.offsetLeft -
+    track.offsetLeft -
+    track.clientWidth / 2 +
+    card.clientWidth / 2;
+
+  track.scrollTo({
+    left: offset,
+    behavior: 'smooth',
+  });
+
+  setActive(i);
+};
 
   /* auto-advance only after user has been on page 2 s */
   useEffect(() => {
@@ -822,7 +833,11 @@ function ClimateCarousel() {
         return next;
       });
     }, 3800);
-    return () => clearInterval(timerRef.current);
+    return () => {
+  if (timerRef.current) {
+    clearInterval(timerRef.current);
+  }
+};
   }, []);                     // ← empty deps: only runs once on mount
 
   return (
@@ -835,7 +850,10 @@ function ClimateCarousel() {
         {slides.map((s, i) => (
           <div
             key={s.id}
-            onClick={() => { clearInterval(timerRef.current); goTo(i); }}
+            onClick={() => {
+                if (timerRef.current) clearInterval(timerRef.current);
+                goTo(i);
+              }}
             className="snap-center flex-none w-72 md:w-96 rounded-2xl overflow-hidden cursor-pointer transition-all duration-300"
             style={{
               boxShadow: active === i ? '0 0 0 4px #7dc142' : 'none',
@@ -847,7 +865,7 @@ function ClimateCarousel() {
               style={{ background: 'linear-gradient(135deg, #3a6b1a, #7dc142)' }}>
               <img src={s.src} alt={s.label}
                 className="w-full h-full object-cover absolute inset-0"
-                onError={(e) => { e.target.style.display = 'none'; }} />
+                onError={(e) => {(e.currentTarget as HTMLImageElement).style.display = 'none';}} />
               <Sun className="w-16 h-16 relative z-10" style={{ color: 'rgba(255,255,255,0.2)' }} />
             </div>
             <div className="bg-white p-4">
@@ -861,7 +879,7 @@ function ClimateCarousel() {
       {/* Dots */}
       <div className="flex justify-center gap-2 mt-4">
         {slides.map((_, i) => (
-          <button key={i} onClick={() => { clearInterval(timerRef.current); goTo(i); }}
+          <button key={i} onClick={() => { if (timerRef.current) {clearInterval(timerRef.current);} goTo(i); }}
             className="rounded-full transition-all duration-300"
             style={{
               width:  active === i ? '24px' : '8px',
@@ -877,7 +895,7 @@ function ClimateCarousel() {
 /* ─── MAIN PAGE ─── */
 export default function HomePage() {
   /* Fix hydration: don't touch localStorage during SSR */
-  const [mounted, setMounted] = useState(false);
+  const [mounted, setMounted] = useState<boolean>(false);
   useEffect(() => { setMounted(true); }, []);
 
   
@@ -1109,7 +1127,7 @@ export default function HomePage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-600 mb-1">First name</label>
-                  <input className="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2" style={{'--tw-ring-color': GRN}} placeholder="Sara" />
+                  <input className="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2" placeholder="Sara" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-600 mb-1">Last name</label>
@@ -1183,7 +1201,9 @@ export default function HomePage() {
                     style={{ background: 'rgba(255,255,255,0.06)' }}>
                     <img src={sp.src} alt={sp.name}
                       className="h-7 object-contain"
-                      onError={(e) => { e.target.style.display='none'; }} />
+                      onError={(e) => {
+  (e.currentTarget as HTMLImageElement).style.display = 'none';
+}} />
                     <span className="text-slate-400 text-sm font-semibold">{sp.name}</span>
                   </div>
                 </div>

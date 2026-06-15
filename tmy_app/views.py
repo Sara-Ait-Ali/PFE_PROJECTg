@@ -93,30 +93,60 @@ class TMYStatusView(APIView):
         })
 
 
+# class TMYAllView(APIView):
+#     permission_classes = [IsAuthenticated]
+#     def get(self, request):
+#         # jobs = TMYJob.objects.all().order_by('-created_at')
+#         jobs = TMYJob.objects.filter(user=request.user).order_by('-created_at')
+#         return Response({
+#             'total':     jobs.count(),
+#             'pending':   jobs.filter(status='pending').count(),
+#             'running':   jobs.filter(status='running').count(),
+#             'completed': jobs.filter(status='completed').count(),
+#             'failed':    jobs.filter(status='failed').count(),
+#             'jobs': [
+#     {
+#         'id':         j.id,
+#         'site_name':  j.site_name,
+#         'latitude':   j.latitude,
+#         'longitude':  j.longitude,
+#         'status':     j.status,
+#         'start_year': j.start_year,
+#         'end_year':   j.end_year,
+#         'created_at': str(j.created_at),
+#     }
+#     for j in jobs
+# ]
+#         })
+
+from django.utils import timezone
+from datetime import timedelta
+
 class TMYAllView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
-        # jobs = TMYJob.objects.all().order_by('-created_at')
-        jobs = TMYJob.objects.filter(user=request.user).order_by('-created_at')
+        two_days_ago = timezone.now() - timedelta(days=2)
+        jobs = TMYJob.objects.filter(
+            user=request.user,
+            created_at__gte=two_days_ago  
+        ).order_by('-created_at')[:3]    
+
+        jobs = list(jobs)
         return Response({
-            'total':     jobs.count(),
-            'pending':   jobs.filter(status='pending').count(),
-            'running':   jobs.filter(status='running').count(),
-            'completed': jobs.filter(status='completed').count(),
-            'failed':    jobs.filter(status='failed').count(),
+            'total': len(jobs),
             'jobs': [
-    {
-        'id':         j.id,
-        'site_name':  j.site_name,
-        'latitude':   j.latitude,
-        'longitude':  j.longitude,
-        'status':     j.status,
-        'start_year': j.start_year,
-        'end_year':   j.end_year,
-        'created_at': str(j.created_at),
-    }
-    for j in jobs
-]
+                {
+                    'id':         j.id,
+                    'site_name':  j.site_name,
+                    'latitude':   j.latitude,
+                    'longitude':  j.longitude,
+                    'status':     j.status,
+                    'start_year': j.start_year,
+                    'end_year':   j.end_year,
+                    'created_at': str(j.created_at),
+                }
+                for j in jobs
+            ]
         })
 class TMYInternalUpdateView(APIView):
     """

@@ -1061,9 +1061,9 @@ export default function HomePage() {
           </div>
           <div className="grid md:grid-cols-3 gap-6">
             {[
-              { e:'☀️', t:'Solar Energy',        d:'Evaluate solar power potential, optimize PV systems, and run yield simulations with bankable TMY data.' },
-              { e:'🏢', t:'Building Simulation', d:'Accurate weather files for EnergyPlus, IDA ICE, and other building energy performance tools.' },
-              { e:'🌍', t:'Climate Research',    d:'Long-term meteorological studies, environmental assessments, and climate change impact analysis.' },
+              { e:'', t:'Solar Energy',        d:'Evaluate solar power potential, optimize PV systems, and run yield simulations with bankable TMY data.' },
+              { e:'', t:'Building Simulation', d:'Accurate weather files for EnergyPlus, IDA ICE, and other building energy performance tools.' },
+              { e:'', t:'Climate Research',    d:'Long-term meteorological studies, environmental assessments, and climate change impact analysis.' },
             ].map((a) => (
               <div key={a.t} className="rounded-2xl p-8 bg-white transition hover:shadow-md"
                 style={{ border: '1px solid #e8e0d0' }}>
@@ -1175,8 +1175,8 @@ export default function HomePage() {
                   sponsor2.png  (e.g. UM6P)
               */}
               {[
-                { src: '/sponsors/sponsor1.png', name: 'IRESEN' },
-                { src: '/sponsors/sponsor2.png', name: 'UM6P'   },
+                { src: '/sponsors/sponsor2.png', name: 'IRESEN' },
+                { src: '/sponsors/sponsor1.png', name: 'GEP'   },
               ].map((sp) => (
                 <div key={sp.name} className="flex flex-col items-center gap-2 opacity-60 hover:opacity-100 transition">
                   <div className="h-10 w-32 rounded-lg flex items-center justify-center overflow-hidden px-3"

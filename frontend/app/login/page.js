@@ -103,8 +103,8 @@ import { loginUser } from '@/lib/api';
 import Link from 'next/link';
 import { Sun, ArrowRight } from 'lucide-react';
 
-const GRN  = '#5cb85c';
-const DGRN = '#2d6a2d';
+const GRN  = '#8DC63F';
+const DGRN = '#4E7A1A';
 
 export default function LoginPage() {
   const router = useRouter();

@@ -22,7 +22,7 @@ const STATUS_STYLES = {
 const STATUS_EMOJI = {
   pending: '⏳', downloading_era5: '📡', downloading_cams: '☀️',
   processing_data: '⚙️', generating_tmy: '📊', generating_report: '📝',
-  completed: '✅', failed: '❌',
+  completed: '', failed: '',
 };
 
 export default function JobsPage() {
@@ -67,7 +67,7 @@ export default function JobsPage() {
           <div style={{ width: '1px', height: '24px', background: GB }}/>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: `linear-gradient(135deg, ${G}, #a8d85a)`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <span style={{ fontSize: '16px' }}>☀️</span>
+              <span style={{ fontSize: '16px' }}></span>
             </div>
             <span style={{ fontWeight: 700, fontSize: '18px', color: GD }}>TMY Generator</span>
           </div>
@@ -95,7 +95,7 @@ export default function JobsPage() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
           <div>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: '#eaf5d0', color: G, fontSize: '12px', fontWeight: 600, padding: '3px 10px', borderRadius: '999px', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              📋 History
+               History
             </div>
             <h1 style={{ fontSize: '26px', fontWeight: 800, color: '#14532d', margin: '0 0 4px' }}>Jobs History</h1>
             <p style={{ color: '#6b7280', fontSize: '14px', margin: 0 }}>All your TMY generation requests</p>
@@ -104,7 +104,7 @@ export default function JobsPage() {
             onClick={fetchJobs}
             style={{ display: 'flex', alignItems: 'center', gap: '6px', color: G, fontWeight: 500, fontSize: '14px', background: 'white', border: `1px solid ${GB}`, padding: '8px 14px', borderRadius: '10px', cursor: 'pointer' }}
           >
-            🔄 Refresh
+             Refresh
           </button>
         </div>
 
@@ -131,7 +131,7 @@ export default function JobsPage() {
               onClick={() => router.push('/generate')}
               style={{ background: `linear-gradient(135deg, ${G}, ${GD})`, color: 'white', border: 'none', padding: '10px 24px', borderRadius: '12px', fontSize: '14px', fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 14px rgba(141,198,63,0.35)' }}
             >
-              🚀 Generate your first TMY
+               Generate your first TMY
             </button>
           </div>
         )}
@@ -148,8 +148,8 @@ export default function JobsPage() {
                 </tr>
               </thead>
               <tbody>
-                {jobs.map((job, i) => (
-                  <tr key={job.id} style={{ borderBottom: i < jobs.length - 1 ? `1px solid ${GL}` : 'none', transition: 'background 0.15s' }}
+                {jobs.slice(0, 3).map((job, i) => (
+                  <tr key={job.id} style={{ borderBottom: i < Math.min(jobs.length, 3) - 1 ? `1px solid ${GL}` : 'none', transition: 'background 0.15s' }}
                     onMouseEnter={e => e.currentTarget.style.background = GL}
                     onMouseLeave={e => e.currentTarget.style.background = 'white'}
                   >

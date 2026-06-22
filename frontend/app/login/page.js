@@ -95,20 +95,21 @@
 // }
 
 
-
 'use client';
+
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { loginUser } from '@/lib/api';
 import Link from 'next/link';
-import { Sun, ArrowRight } from 'lucide-react';
+import { Sun, ArrowRight, User, Lock, Eye, EyeOff } from 'lucide-react';
 
-const GRN  = '#8DC63F';
+const GRN = '#8DC63F';
 const DGRN = '#4E7A1A';
 
 export default function LoginPage() {
   const router = useRouter();
   const [form, setForm] = useState({ username: '', password: '' });
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -122,92 +123,102 @@ export default function LoginPage() {
       localStorage.setItem('refresh_token', res.data.refresh);
       router.push('/generate');
     } catch (err) {
-      setError('Invalid username or password');
+      setError("We couldn't sign you in. Please check your username and password.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 bg-white">
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem', background: '#F8FAF5' }}>
 
-      {/* Top beige accent strip */}
-      <div className="w-full h-1 fixed top-0 left-0" style={{ background: `linear-gradient(90deg, ${DGRN}, ${GRN}, #8bc34a)` }} />
+      {/* Top green bar */}
+      <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '3px', background: `linear-gradient(90deg, ${DGRN}, ${GRN})` }} />
 
       {/* Logo */}
-      <Link href="/" className="flex items-center gap-2 mb-8">
-        <div className="w-9 h-9 rounded-xl flex items-center justify-center"
-          style={{ background: `linear-gradient(135deg, ${GRN}, ${DGRN})` }}>
-          <Sun className="w-5 h-5 text-white" />
+      <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '2rem', textDecoration: 'none' }}>
+        <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: GRN, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Sun size={18} color="#fff" />
         </div>
-        <span className="text-xl font-extrabold text-slate-900">
+        <span style={{ fontSize: '17px', fontWeight: '600', color: '#111' }}>
           Clima<span style={{ color: GRN }}>Sphere</span>
         </span>
       </Link>
 
       {/* Card */}
-      <div className="w-full max-w-sm rounded-2xl p-8 shadow-sm border"
-        style={{ background: '#faf8f4', borderColor: '#e8e0d0' }}>
+      <div style={{ width: '100%', maxWidth: '440px', background: 'white', borderRadius: '24px', padding: '3rem', boxShadow: '0 15px 40px rgba(0,0,0,0.08)', border: '1px solid #E5E7EB' }}>
 
-        <h1 className="text-2xl font-black text-slate-800 mb-1">Welcome back</h1>
-        <p className="text-sm text-slate-400 mb-6">Sign in to your account</p>
+        <span style={{ display: 'inline-block', background: '#EAF3DE', color: DGRN, padding: '5px 12px', borderRadius: '999px', fontSize: '12px', fontWeight: '600', marginBottom: '1rem' }}>
+          SIGN IN
+        </span>
+
+        <h2 style={{ fontSize: '2rem', fontWeight: '700', color: '#111827', marginBottom: '0.5rem' }}>Welcome back</h2>
+        <p style={{ color: '#6B7280', marginBottom: '2rem' }}>Sign in to continue to ClimaSphere.</p>
 
         {error && (
-          <div className="border px-4 py-3 rounded-xl mb-5 text-sm"
-            style={{ background: '#fef2f2', borderColor: '#fecaca', color: '#dc2626' }}>
+          <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', color: '#DC2626', padding: '12px', borderRadius: '10px', marginBottom: '1rem', fontSize: '14px' }}>
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-semibold text-slate-600 mb-1.5">Username</label>
-            <input
-              type="text" required
-              value={form.username}
-              onChange={(e) => setForm({ ...form, username: e.target.value })}
-              className="w-full border rounded-xl px-4 py-2.5 text-sm focus:outline-none bg-white transition"
-              style={{ borderColor: '#e8e0d0' }}
-              onFocus={e => e.target.style.borderColor = GRN}
-              onBlur={e => e.target.style.borderColor = '#e8e0d0'}
-              placeholder="Your username"
-            />
+        <form onSubmit={handleSubmit}>
+
+          {/* Username */}
+          <div style={{ marginBottom: '1rem' }}>
+            <label style={{ display: 'block', marginBottom: '6px', fontSize: '14px', fontWeight: '600' }}>Username</label>
+            <div style={{ position: 'relative' }}>
+              <User size={16} color="#9CA3AF" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+              <input
+                type="text" required
+                value={form.username}
+                onChange={(e) => setForm({ ...form, username: e.target.value })}
+                placeholder="Enter your username"
+                style={{ width: '100%', boxSizing: 'border-box', padding: '12px 14px 12px 40px', borderRadius: '12px', border: '1px solid #D1D5DB', outline: 'none', fontSize: '14px' }}
+                onFocus={e => { e.target.style.borderColor = GRN; e.target.style.boxShadow = '0 0 0 3px rgba(141,198,63,0.15)'; }}
+                onBlur={e => { e.target.style.borderColor = '#D1D5DB'; e.target.style.boxShadow = 'none'; }}
+              />
+            </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-semibold text-slate-600 mb-1.5">Password</label>
-            <input
-              type="password" required
-              value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
-              className="w-full border rounded-xl px-4 py-2.5 text-sm focus:outline-none bg-white transition"
-              style={{ borderColor: '#e8e0d0' }}
-              onFocus={e => e.target.style.borderColor = GRN}
-              onBlur={e => e.target.style.borderColor = '#e8e0d0'}
-              placeholder="Your password"
-            />
+          {/* Password */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+              <label style={{ fontSize: '14px', fontWeight: '600' }}>Password</label>
+              <a href="#" style={{ fontSize: '12px', color: GRN, textDecoration: 'none' }}>Forgot password?</a>
+            </div>
+            <div style={{ position: 'relative' }}>
+              <Lock size={16} color="#9CA3AF" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+              <input
+                type={showPassword ? 'text' : 'password'} required
+                value={form.password}
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
+                placeholder="Enter your password"
+                style={{ width: '100%', boxSizing: 'border-box', padding: '12px 44px 12px 40px', borderRadius: '12px', border: '1px solid #D1D5DB', outline: 'none', fontSize: '14px' }}
+                onFocus={e => { e.target.style.borderColor = GRN; e.target.style.boxShadow = '0 0 0 3px rgba(141,198,63,0.15)'; }}
+                onBlur={e => { e.target.style.borderColor = '#D1D5DB'; e.target.style.boxShadow = 'none'; }}
+              />
+              <button type="button" onClick={() => setShowPassword(!showPassword)}
+                style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', border: 'none', background: 'transparent', cursor: 'pointer', color: '#9CA3AF' }}>
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
 
-          <button
-            type="submit" disabled={loading}
-            className="w-full flex items-center justify-center gap-2 text-white font-semibold py-2.5 rounded-xl transition mt-1"
-            style={{ background: loading ? '#9ec99e' : GRN }}>
-            {loading ? 'Signing in...' : <> Sign In <ArrowRight className="w-4 h-4" /> </>}
+          <button type="submit" disabled={loading}
+            style={{ width: '100%', background: loading ? '#A7D67A' : GRN, color: 'white', border: 'none', borderRadius: '12px', padding: '13px', fontWeight: '600', cursor: loading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '15px' }}>
+            {loading ? 'Signing in...' : <> Sign In <ArrowRight size={16} /> </>}
           </button>
         </form>
 
-        <p className="text-center text-sm text-slate-400 mt-5">
-          No account?{' '}
-          <Link href="/register" className="font-semibold hover:underline" style={{ color: GRN }}>
-            Register free
-          </Link>
+        <p style={{ marginTop: '1.5rem', textAlign: 'center', color: '#6B7280', fontSize: '14px' }}>
+          Don't have an account?{' '}
+          <Link href="/register" style={{ color: GRN, fontWeight: '600', textDecoration: 'none' }}>Create one</Link>
         </p>
+
+        <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+          <Link href="/" style={{ color: '#9CA3AF', fontSize: '13px', textDecoration: 'none' }}>← Back to homepage</Link>
+        </div>
       </div>
-
-      <Link href="/" className="mt-6 text-xs text-slate-400 hover:text-slate-600 transition">
-        ← Back to homepage
-      </Link>
-
     </div>
   );
 }

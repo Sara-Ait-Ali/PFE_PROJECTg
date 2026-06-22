@@ -20,8 +20,8 @@ const STATUS_STYLES = {
 };
 
 const STATUS_EMOJI = {
-  pending: '⏳', downloading_era5: '📡', downloading_cams: '☀️',
-  processing_data: '⚙️', generating_tmy: '📊', generating_report: '📝',
+  pending: '', downloading_era5: '', downloading_cams: '',
+  processing_data: '', generating_tmy: '', generating_report: '',
   completed: '', failed: '',
 };
 

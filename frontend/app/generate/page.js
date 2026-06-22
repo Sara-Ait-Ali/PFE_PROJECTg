@@ -446,7 +446,7 @@ export default function GeneratePage() {
               onClick={() => router.push('/jobs')}
               style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#6A9E28', fontWeight: 500, fontSize: '14px', background: '#EAF5CE', border: '1px solid #C8E47A', padding: '6px 14px', borderRadius: '8px', cursor: 'pointer' }}
             >
-              📋 History
+               History
             </button>
             <button
               onClick={() => { localStorage.clear(); router.push('/login'); }}

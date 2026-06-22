@@ -284,9 +284,12 @@ export default function GeneratePage() {
     longitude: '',
     start_date: new Date('2005-01-01'),
     end_date: new Date('2024-12-31'),
+    job_type: 'full',
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [showDownloadOptions, setShowDownloadOptions] = useState(false);
 
   useEffect(() => {
     if (!localStorage.getItem('access_token')) {
@@ -331,15 +334,29 @@ export default function GeneratePage() {
     setError('');
     try {
       const res = await submitTMYJob({
-        site_name: form.site_name,
-        latitude: parseFloat(form.latitude),
-        longitude: parseFloat(form.longitude),
-        start_year: form.start_date.getFullYear(),
-        end_year: form.end_date.getFullYear(),
-        start_date: form.start_date.toISOString().split('T')[0],
-        end_date: form.end_date.toISOString().split('T')[0],
-      });
-      router.push(`/status?job_id=${res.data.job_id}`);
+  site_name: form.site_name,
+  latitude: parseFloat(form.latitude),
+  longitude: parseFloat(form.longitude),
+  start_year: form.start_date.getFullYear(),
+  end_year: form.end_date.getFullYear(),
+  start_date: form.start_date.toISOString().split('T')[0],
+  end_date: form.end_date.toISOString().split('T')[0],
+  job_type: form.job_type,
+  selected_files: selectedFiles,
+});
+    if (form.job_type === 'download_only') {
+
+  router.push(
+    `/download-status?job_id=${res.data.job_id}&type=download`
+  );
+
+} else {
+
+  router.push(
+    `/status?job_id=${res.data.job_id}&type=tmy`
+  );
+
+}
     } catch (err) {
       setError('Failed to submit job. Please try again.');
     } finally {
@@ -619,6 +636,51 @@ export default function GeneratePage() {
                 </div>
               )}
 
+              {/* Job Type Toggle */}
+<div>
+  <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#374151', marginBottom: '6px' }}>
+    What do you want to do?
+  </label>
+  <div style={{ display: 'flex', gap: '10px' }}>
+    <button
+      type="button"
+      onClick={() => setForm({ ...form, job_type: 'full' })}
+      style={{
+        flex: 1,
+        padding: '12px',
+        borderRadius: '10px',
+        border: form.job_type === 'full' ? '2px solid #8DC63F' : '1.5px solid #D1D5DB',
+        background: form.job_type === 'full' ? '#EAF5CE' : 'white',
+        color: form.job_type === 'full' ? '#4E7A1A' : '#6b7280',
+        fontWeight: 600,
+        fontSize: '13px',
+        cursor: 'pointer',
+        textAlign: 'center'
+      }}
+    >
+      📊 Generate Full TMY Report
+    </button>
+    <button
+      type="button"
+      onClick={() => setShowDownloadOptions(true)}
+      style={{
+        flex: 1,
+        padding: '12px',
+        borderRadius: '10px',
+        border: form.job_type === 'download_only' ? '2px solid #8DC63F' : '1.5px solid #D1D5DB',
+        background: form.job_type === 'download_only' ? '#EAF5CE' : 'white',
+        color: form.job_type === 'download_only' ? '#4E7A1A' : '#6b7280',
+        fontWeight: 600,
+        fontSize: '13px',
+        cursor: 'pointer',
+        textAlign: 'center'
+      }}
+    >
+      📥 Download Data Only
+    </button>
+  </div>
+</div>
+
               {/* Submit button */}
               <button
                 type="submit"
@@ -640,12 +702,89 @@ export default function GeneratePage() {
                   marginTop: '4px',
                 }}
               >
-                {loading ? 'Submitting...' : 'Generate TMY File'}
+                {loading
+ ? 'Submitting...'
+ : form.job_type === 'download_only'
+ ? 'Download Selected Data'
+ : 'Generate TMY File'}
               </button>
 
             </form>
           </div>
         </div>
+        {showDownloadOptions && (
+  <div
+  className="fixed inset-0 bg-black/50 flex items-center justify-center"
+  style={{ zIndex: 99999 }}
+>
+
+    <div
+  className="bg-white p-6 rounded-xl w-[500px]"
+  style={{ zIndex: 100000, position: 'relative' }}
+>
+
+      <h2 className="text-xl font-bold mb-4">
+        Select Files To Download
+      </h2>
+
+      {[
+        'ERA5',
+        'CAMS',
+        'Temperature',
+        'GHI',
+        'DNI',
+        'GTI',
+        'Wind Speed',
+        'Relative Humidity'
+      ].map(item => (
+
+        <label
+          key={item}
+          className="flex items-center gap-2 mb-2"
+        >
+
+          <input
+            type="checkbox"
+            value={item}
+            onChange={(e) => {
+
+              if (e.target.checked) {
+                setSelectedFiles(prev => [...prev, item]);
+              } else {
+                setSelectedFiles(prev =>
+                  prev.filter(x => x !== item)
+                );
+              }
+
+            }}
+          />
+
+          {item}
+
+        </label>
+
+      ))}
+
+      <button
+        className="mt-4 bg-green-600 text-white px-4 py-2 rounded"
+        onClick={() => {
+
+          setForm(prev => ({
+            ...prev,
+            job_type: 'download_only'
+          }));
+
+          setShowDownloadOptions(false);
+
+        }}
+      >
+        Confirm
+      </button>
+
+    </div>
+
+  </div>
+)}
       </div>
     </>
   );

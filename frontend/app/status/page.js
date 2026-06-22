@@ -214,7 +214,7 @@ export default function StatusPage() {
                 <button
                   onClick={async () => {
                     try {
-                        // ✅ CORRECT - handles blob response from axios
+                        
 const res = await downloadJob(jobId);
 const url = window.URL.createObjectURL(new Blob([res.data]));
 const link = document.createElement('a');

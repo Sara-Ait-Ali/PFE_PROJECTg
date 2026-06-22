@@ -90,6 +90,7 @@ class TMYStatusView(APIView):
             'error':         job.error_message,
             'created_at':    job.created_at,
             'updated_at':    job.updated_at,
+            'selected_files': job.selected_files,
         })
 
 

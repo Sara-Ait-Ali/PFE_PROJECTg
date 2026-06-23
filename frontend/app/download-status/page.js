@@ -2,31 +2,33 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { getJobStatus, downloadJob } from '@/lib/api';
+import Navbar from '@/components/Navbar';
+import { ArrowLeft } from 'lucide-react';
 
-const G = '#8DC63F';
+const G  = '#8DC63F';
 const GD = '#5a8a1f';
 const GL = '#f4faeb';
 const GB = '#c5e08a';
 
 const TMY_STEPS = [
-  { key: 'pending', label: 'Job queued' },
-  { key: 'downloading_era5', label: 'Downloading ERA5 data' },
-  { key: 'downloading_cams', label: 'Downloading CAMS data' },
-  { key: 'processing_data', label: 'Processing datasets' },
-  { key: 'generating_tmy', label: 'Generating TMY' },
+  { key: 'pending',           label: 'Job queued' },
+  { key: 'downloading_era5',  label: 'Downloading ERA5 data' },
+  { key: 'downloading_cams',  label: 'Downloading CAMS data' },
+  { key: 'processing_data',   label: 'Processing datasets' },
+  { key: 'generating_tmy',    label: 'Generating TMY' },
   { key: 'generating_report', label: 'Generating report' },
-  { key: 'completed', label: 'Completed' },
+  { key: 'completed',         label: 'Completed' },
 ];
 
 const DOWNLOAD_STEPS = [
-  { key: 'pending', label: 'Job queued' },
+  { key: 'pending',          label: 'Job queued' },
   { key: 'downloading_era5', label: 'Downloading ERA5 dataset' },
   { key: 'downloading_cams', label: 'Downloading CAMS dataset' },
-  { key: 'processing_data', label: 'Preparing selected files' },
-  { key: 'completed', label: 'Download package ready' },
+  { key: 'processing_data',  label: 'Preparing selected files' },
+  { key: 'completed',        label: 'Download package ready' },
 ];
 
-export default function StatusPage() {
+export default function DownloadStatusPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const jobId = searchParams.get('job_id');
@@ -39,7 +41,6 @@ export default function StatusPage() {
   useEffect(() => {
     if (!localStorage.getItem('access_token')) { router.push('/login'); return; }
     if (!jobId) return;
-
     const fetchStatus = async () => {
       try {
         const res = await getJobStatus(jobId);
@@ -48,7 +49,6 @@ export default function StatusPage() {
         setError('Failed to fetch job status');
       }
     };
-
     fetchStatus();
     const interval = setInterval(fetchStatus, 5000);
     return () => clearInterval(interval);
@@ -58,65 +58,40 @@ export default function StatusPage() {
   const progress = job ? Math.round((currentStepIndex / (STEPS.length - 1)) * 100) : 0;
 
   return (
-    <div style={{ minHeight: '100vh', background: `linear-gradient(135deg, ${GL} 0%, #eaf5d0 50%, ${GL} 100%)` }}>
+    <div style={{ minHeight: '100vh', background: GL }}>
 
-      {/* NAVBAR */}
-      <nav style={{ background: 'white', borderBottom: `1px solid ${GB}`, padding: '0 24px', height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', boxShadow: '0 1px 8px rgba(141,198,63,0.07)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <button
-            onClick={() => router.back()}
-            style={{ display: 'flex', alignItems: 'center', gap: '6px', color: G, fontWeight: 600, fontSize: '14px', background: 'none', border: 'none', cursor: 'pointer', padding: '6px 10px', borderRadius: '8px' }}
-            onMouseEnter={e => e.currentTarget.style.background = GL}
-            onMouseLeave={e => e.currentTarget.style.background = 'none'}
-          >
-            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-            Back
-          </button>
-          <div style={{ width: '1px', height: '24px', background: GB }}/>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: `linear-gradient(135deg, ${G}, #a8d85a)`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width="16" height="16" fill="none" stroke="white" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-            </div>
-            <span style={{ fontWeight: 700, fontSize: '18px', color: GD }}>TMY Generator</span>
-          </div>
-        </div>
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <button
-            onClick={() => router.push('/jobs')}
-            style={{ color: G, fontWeight: 500, fontSize: '14px', background: GL, border: `1px solid ${GB}`, padding: '6px 14px', borderRadius: '8px', cursor: 'pointer' }}
-          >
-            History
-          </button>
-          <button
-            onClick={() => router.push('/generate')}
-            style={{ color: 'white', fontWeight: 600, fontSize: '14px', background: `linear-gradient(135deg, ${G}, ${GD})`, border: 'none', padding: '6px 16px', borderRadius: '8px', cursor: 'pointer' }}
-          >
-            + New Job
-          </button>
-        </div>
-      </nav>
+      <Navbar page="status" />
+
+      {/* Back arrow */}
+      <div style={{ maxWidth: '760px', margin: '0 auto', padding: '20px 24px 0' }}>
+        <button
+          onClick={() => router.push('/jobs')}
+          style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280', fontSize: '14px', padding: '4px 0' }}
+          onMouseEnter={e => e.currentTarget.style.color = GD}
+          onMouseLeave={e => e.currentTarget.style.color = '#6b7280'}
+        >
+          <ArrowLeft size={16} />
+          Back to History
+        </button>
+      </div>
 
       <div style={{ maxWidth: '760px', margin: '0 auto', padding: '32px 24px' }}>
 
         {/* Page title */}
         <div style={{ marginBottom: '24px' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: '#eaf5d0', color: G, fontSize: '12px', fontWeight: 600, padding: '3px 10px', borderRadius: '999px', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', background: '#EAF3DE', color: G, fontSize: '12px', fontWeight: 600, padding: '3px 10px', borderRadius: '999px', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             Job #{jobId}
           </div>
           <h1 style={{ fontSize: '26px', fontWeight: 800, color: '#14532d', margin: '0 0 4px' }}>
             {type === 'download' ? 'Download Status' : 'Processing Status'}
           </h1>
           <p style={{ color: '#6b7280', fontSize: '14px', margin: 0 }}>
-            {type === 'download'
-              ? 'Preparing your selected datasets for download.'
-              : 'This page updates automatically every 5 seconds.'}
+            {type === 'download' ? 'Preparing your selected datasets for download.' : 'This page updates automatically every 5 seconds.'}
           </p>
         </div>
 
         {error && (
-          <div style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626', padding: '12px 16px', borderRadius: '12px', marginBottom: '20px', fontSize: '14px' }}>
-            {error}
-          </div>
+          <div style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626', padding: '12px 16px', borderRadius: '12px', marginBottom: '20px', fontSize: '14px' }}>{error}</div>
         )}
 
         {!job && !error && (
@@ -143,33 +118,14 @@ export default function StatusPage() {
               </div>
             </div>
 
-            {/* Selected Files Card - only for download type */}
+            {/* Selected files card */}
             {type === 'download' && job.selected_files && (
-              <div style={{
-                background: 'white',
-                borderRadius: '20px',
-                border: `1px solid ${GB}`,
-                boxShadow: '0 4px 24px rgba(141,198,63,0.08)',
-                padding: '20px 24px',
-                marginBottom: '20px',
-              }}>
-                <h3 style={{
-                  fontWeight: 700,
-                  color: '#14532d',
-                  marginBottom: '12px'
-                }}>
-                  Selected Files
-                </h3>
-
-                {job.selected_files?.map(file => (
-                  <div
-                    key={file}
-                    style={{
-                      padding: '8px 0',
-                      color: '#4E7A1A'
-                    }}
-                  >
-                    ✅ {file}
+              <div style={{ background: 'white', borderRadius: '20px', border: `1px solid ${GB}`, boxShadow: '0 4px 24px rgba(141,198,63,0.08)', padding: '20px 24px', marginBottom: '20px' }}>
+                <h3 style={{ fontWeight: 700, color: '#14532d', fontSize: '15px', margin: '0 0 12px' }}>Selected Files</h3>
+                {job.selected_files.map(file => (
+                  <div key={file} style={{ padding: '8px 0', color: '#4E7A1A', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <svg width="14" height="14" fill="none" stroke={G} strokeWidth="2.5" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+                    {file}
                   </div>
                 ))}
               </div>
@@ -182,62 +138,39 @@ export default function StatusPage() {
                 <span style={{ fontSize: '13px', color: G, fontWeight: 600 }}>{progress}%</span>
               </div>
 
-              {/* Progress bar */}
-              <div style={{ height: '6px', background: '#eaf5d0', borderRadius: '999px', marginBottom: '20px', overflow: 'hidden' }}>
-                <div style={{ height: '100%', width: `${progress}%`, background: `linear-gradient(90deg, ${G}, ${GD})`, borderRadius: '999px', transition: 'width 0.5s ease' }}/>
+              <div style={{ height: '6px', background: '#EAF3DE', borderRadius: '999px', marginBottom: '20px', overflow: 'hidden' }}>
+                <div style={{ height: '100%', width: `${progress}%`, background: `linear-gradient(90deg, ${G}, ${GD})`, borderRadius: '999px', transition: 'width 0.5s ease' }} />
               </div>
 
-              {/* Real-time message */}
               {job.message && job.status !== 'completed' && job.status !== 'failed' && (
                 <div style={{ background: GL, border: `1px solid ${GB}`, borderRadius: '10px', padding: '10px 14px', marginBottom: '16px', fontSize: '13px', color: GD, fontWeight: 500, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: G, flexShrink: 0, animation: 'pulse 1.5s infinite' }}/>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: G, flexShrink: 0 }} />
                   {job.message}
                 </div>
               )}
 
-              {/* Steps list */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {STEPS.map((step, index) => {
-                  const isDone = currentStepIndex > index;
+                  const isDone    = currentStepIndex > index;
                   const isCurrent = currentStepIndex === index;
-
                   return (
                     <div key={step.key} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      {/* Circle */}
-                      <div style={{
-                        width: '32px', height: '32px', borderRadius: '50%', flexShrink: 0,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        background: isDone ? GL : isCurrent ? '#eaf5d0' : '#f9fafb',
-                        border: isDone ? `2px solid ${G}` : isCurrent ? `2px solid ${G}` : '2px solid #e5e7eb',
-                        transition: 'all 0.3s'
-                      }}>
+                      <div style={{ width: '32px', height: '32px', borderRadius: '50%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: isDone ? GL : isCurrent ? '#EAF3DE' : '#f9fafb', border: isDone || isCurrent ? `2px solid ${G}` : '2px solid #e5e7eb', transition: 'all 0.3s' }}>
                         {isDone ? (
                           <svg width="14" height="14" fill="none" stroke={G} strokeWidth="2.5" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
                         ) : isCurrent ? (
-                          <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: G }}/>
+                          <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: G }} />
                         ) : (
-                          <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#d1d5db' }}/>
+                          <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#d1d5db' }} />
                         )}
                       </div>
-
-                      {/* Label */}
                       <div style={{ flex: 1 }}>
-                        <span style={{
-                          fontSize: '14px',
-                          fontWeight: isCurrent ? 700 : isDone ? 500 : 400,
-                          color: isDone ? GD : isCurrent ? '#1f2937' : '#9ca3af'
-                        }}>
+                        <span style={{ fontSize: '14px', fontWeight: isCurrent ? 700 : isDone ? 500 : 400, color: isDone ? GD : isCurrent ? '#1f2937' : '#9ca3af' }}>
                           {step.label}
                         </span>
                       </div>
-
-                      {/* Badge */}
-                      {isDone && (
-                        <span style={{ fontSize: '11px', fontWeight: 600, color: G, background: GL, padding: '2px 8px', borderRadius: '999px' }}>Done</span>
-                      )}
-                      {isCurrent && job.status !== 'completed' && (
-                        <span style={{ fontSize: '11px', fontWeight: 600, color: 'white', background: G, padding: '2px 8px', borderRadius: '999px' }}>Running</span>
-                      )}
+                      {isDone && <span style={{ fontSize: '11px', fontWeight: 600, color: G, background: GL, padding: '2px 8px', borderRadius: '999px' }}>Done</span>}
+                      {isCurrent && job.status !== 'completed' && <span style={{ fontSize: '11px', fontWeight: 600, color: 'white', background: G, padding: '2px 8px', borderRadius: '999px' }}>Running</span>}
                     </div>
                   );
                 })}
@@ -262,9 +195,7 @@ export default function StatusPage() {
                   {type === 'download' ? 'Download Package Ready' : 'TMY Generation Complete'}
                 </p>
                 <p style={{ color: '#6b7280', fontSize: '14px', margin: '0 0 20px' }}>
-                  {type === 'download'
-                    ? 'Your selected datasets are ready to download.'
-                    : 'Your files are ready to download.'}
+                  {type === 'download' ? 'Your selected datasets are ready to download.' : 'Your files are ready to download.'}
                 </p>
                 <button
                   onClick={async () => {
@@ -282,7 +213,7 @@ export default function StatusPage() {
                       alert('Download failed. Please try again.');
                     }
                   }}
-                  style={{ background: `linear-gradient(135deg, ${G}, ${GD})`, color: 'white', border: 'none', padding: '12px 32px', borderRadius: '12px', fontSize: '15px', fontWeight: 700, cursor: 'pointer', boxShadow: `0 4px 14px rgba(141,198,63,0.35)` }}
+                  style={{ background: G, color: 'white', border: 'none', padding: '12px 32px', borderRadius: '12px', fontSize: '15px', fontWeight: 700, cursor: 'pointer', boxShadow: `0 4px 14px rgba(141,198,63,0.35)` }}
                   onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
                   onMouseLeave={e => e.currentTarget.style.opacity = '1'}
                 >

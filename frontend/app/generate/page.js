@@ -1206,8 +1206,8 @@ export default function GeneratePage() {
               <div>
                 <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#374151', marginBottom: '6px' }}>What do you want to do?</label>
                 <div style={{ display: 'flex', gap: '10px' }}>
-                  <button type="button" onClick={() => setForm({ ...form, job_type: 'full' })} style={{ flex: 1, padding: '12px', borderRadius: '10px', border: form.job_type === 'full' ? '2px solid #8DC63F' : '1.5px solid #D1D5DB', background: form.job_type === 'full' ? '#EAF5CE' : 'white', color: form.job_type === 'full' ? '#4E7A1A' : '#6b7280', fontWeight: 600, fontSize: '13px', cursor: 'pointer' }}>📊 Generate Full TMY Report</button>
-                  <button type="button" onClick={() => setShowDownloadOptions(true)} style={{ flex: 1, padding: '12px', borderRadius: '10px', border: form.job_type === 'download_only' ? '2px solid #8DC63F' : '1.5px solid #D1D5DB', background: form.job_type === 'download_only' ? '#EAF5CE' : 'white', color: form.job_type === 'download_only' ? '#4E7A1A' : '#6b7280', fontWeight: 600, fontSize: '13px', cursor: 'pointer' }}>📥 Download Data Only</button>
+                  <button type="button" onClick={() => setForm({ ...form, job_type: 'full' })} style={{ flex: 1, padding: '12px', borderRadius: '10px', border: form.job_type === 'full' ? '2px solid #8DC63F' : '1.5px solid #D1D5DB', background: form.job_type === 'full' ? '#EAF5CE' : 'white', color: form.job_type === 'full' ? '#4E7A1A' : '#6b7280', fontWeight: 600, fontSize: '13px', cursor: 'pointer' }}>Generate Full TMY Report</button>
+                  <button type="button" onClick={() => setShowDownloadOptions(true)} style={{ flex: 1, padding: '12px', borderRadius: '10px', border: form.job_type === 'download_only' ? '2px solid #8DC63F' : '1.5px solid #D1D5DB', background: form.job_type === 'download_only' ? '#EAF5CE' : 'white', color: form.job_type === 'download_only' ? '#4E7A1A' : '#6b7280', fontWeight: 600, fontSize: '13px', cursor: 'pointer' }}> Download Data Only</button>
                 </div>
               </div>
 

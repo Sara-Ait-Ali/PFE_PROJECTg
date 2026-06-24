@@ -748,6 +748,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { downloadJob } from '@/lib/api';
 import React from 'react';
+import Navbar from '@/components/Navbar';
 
 const G    = '#8DC63F';
 const GD   = '#5a8a1f';
@@ -878,8 +879,9 @@ export default function ResultsPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: GL, fontFamily: 'sans-serif' }}>
+       <Navbar page="status" />
 
-      {/* NAVBAR */}
+      {/* NAVBAR
       <nav style={{ background: 'white', borderBottom: `2px solid ${G}`, padding: '0 24px', height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', boxShadow: '0 1px 8px rgba(141,198,63,0.10)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <button onClick={() => router.back()}
@@ -901,9 +903,37 @@ export default function ResultsPage() {
             + New Job
           </button>
         </div>
-      </nav>
+      </nav> */}
 
       <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '32px 24px 60px' }}>
+        <div
+            style={{
+              maxWidth: '1000px',
+              margin: '0 auto',
+              padding: '20px 24px 0',
+            }}
+          >
+            <button
+              onClick={() => router.push(`/status?job_id=${jobId}`)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: '#6b7280',
+                fontSize: '14px',
+                padding: '4px 0',
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = GD)}
+              onMouseLeave={(e) => (e.currentTarget.style.color = '#6b7280')}
+            >
+              {Icon.back}
+              Back to Status
+            </button>
+          </div>
+        
 
         {loading && <div style={{ textAlign: 'center', color: '#9ca3af', padding: '80px 0', fontSize: '15px' }}>Loading results…</div>}
         {error   && <div style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626', padding: '16px', borderRadius: '12px', fontSize: '14px' }}>{error}</div>}

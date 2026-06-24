@@ -110,6 +110,7 @@ export default function JobsPage() {
               </thead>
               <tbody>
                 {jobs.map((job, i) => (
+                  
                   <tr key={job.id}
                     style={{ borderBottom: i < jobs.length - 1 ? `1px solid ${GL}` : 'none' }}
                     onMouseEnter={e => e.currentTarget.style.background = GL}
@@ -139,7 +140,9 @@ export default function JobsPage() {
                       </button>
                     </td>
                   </tr>
+                  
                 ))}
+                
               </tbody>
             </table>
           </div>

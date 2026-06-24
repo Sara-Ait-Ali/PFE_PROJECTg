@@ -747,6 +747,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { downloadJob } from '@/lib/api';
+import React from 'react';
 
 const G    = '#8DC63F';
 const GD   = '#5a8a1f';
@@ -868,7 +869,7 @@ export default function ResultsPage() {
     finally  { setDlLoading(false); }
   };
 
-  const tabs: { id: Tab; label: string; icon: JSX.Element }[] = [
+  const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
     { id: 'summary',  label: 'Summary',     icon: Icon.summary  },
     { id: 'plots',    label: 'Plots',       icon: Icon.plots    },
     // { id: 'months',   label: 'Best Months', icon: Icon.months   },

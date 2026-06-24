@@ -38,6 +38,7 @@ export default function JobsPage() {
     try {
       const res = await getAllJobs();
       setJobs(res.data.jobs);
+      console.log(res.data.jobs);
     } catch (err) {
       setError('Failed to load jobs history');
     } finally {
@@ -127,7 +128,13 @@ export default function JobsPage() {
                       {new Date(job.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                     </td>
                     <td style={{ padding: '14px 18px' }}>
-                      <button onClick={() => router.push(`/status?job_id=${job.id}`)} style={{ color: G, fontWeight: 600, fontSize: '13px', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>
+                      <button onClick={() => {
+  if (job.selected_files && job.selected_files.length > 0) {
+    router.push(`/download-status?job_id=${job.id}&type=download`);
+  } else {
+    router.push(`/status?job_id=${job.id}`);
+  }
+}} style={{ color: G, fontWeight: 600, fontSize: '13px', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>
                         View →
                       </button>
                     </td>

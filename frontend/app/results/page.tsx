@@ -871,7 +871,7 @@ export default function ResultsPage() {
   const tabs: { id: Tab; label: string; icon: JSX.Element }[] = [
     { id: 'summary',  label: 'Summary',     icon: Icon.summary  },
     { id: 'plots',    label: 'Plots',       icon: Icon.plots    },
-    { id: 'months',   label: 'Best Months', icon: Icon.months   },
+    // { id: 'months',   label: 'Best Months', icon: Icon.months   },
     { id: 'download', label: 'Download',    icon: Icon.download },
   ];
 

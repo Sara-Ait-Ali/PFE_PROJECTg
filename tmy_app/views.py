@@ -100,6 +100,7 @@ class TMYAllView(APIView):
                     'start_year': j.start_year,
                     'end_year':   j.end_year,
                     'created_at': str(j.created_at),
+                    'selected_files': j.selected_files,
                 }
                 for j in jobs
             ]

@@ -73,7 +73,8 @@ def process_climate_job(job_id):
     try:
         job = TMYJob.objects.get(id=job_id)
 
-        output_dir    = os.path.join('TMYs', job.site_name)
+        # output_dir    = os.path.join('TMYs', job.site_name)
+        output_dir = os.path.join(os.getcwd(), 'TMYs', job.site_name)
         plot_dir      = os.path.join(output_dir, 'plot')
         tmy_files_dir = os.path.join(output_dir, 'tmy_files')
 

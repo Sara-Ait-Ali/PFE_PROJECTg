@@ -418,37 +418,50 @@ export default function StatusPage() {
 
             {/* ── COMPLETED ── */}
             {job.status === 'completed' && (
-              <div style={{ background: 'white', border: `2px solid ${G}`, borderRadius: '20px', padding: '28px 24px', textAlign: 'center', boxShadow: `0 8px 32px rgba(141,198,63,0.15)` }}>
-                <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: GL, border: `2px solid ${G}`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-                  <svg width="24" height="24" fill="none" stroke={G} strokeWidth="2.5" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
-                </div>
-                <p style={{ color: GD, fontWeight: 800, fontSize: '18px', margin: '0 0 6px' }}>TMY Generation Complete</p>
-                <p style={{ color: '#6b7280', fontSize: '14px', margin: '0 0 20px' }}>Your files are ready to download.</p>
-                <button
-                  onClick={async () => {
-                    try {
-                        
-const res = await downloadJob(jobId);
-const url = window.URL.createObjectURL(new Blob([res.data]));
-const link = document.createElement('a');
-link.href = url;
-link.setAttribute('download', `TMY_${job.site_name}.zip`);
-document.body.appendChild(link);
-link.click();
-link.remove();
-window.URL.revokeObjectURL(url);
-                    } catch (err) {
-                        alert('Download failed. Please try again.');
-                    }
-                    }}
-                  style={{ background: `linear-gradient(135deg, ${G}, ${GD})`, color: 'white', border: 'none', padding: '12px 32px', borderRadius: '12px', fontSize: '15px', fontWeight: 700, cursor: 'pointer', boxShadow: `0 4px 14px rgba(141,198,63,0.35)` }}
-                  onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
-                  onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-                >
-                  Download Results
-                </button>
-              </div>
-            )}
+  <div style={{ background: 'white', border: `2px solid ${G}`, borderRadius: '20px', padding: '28px 24px', textAlign: 'center', boxShadow: `0 8px 32px rgba(141,198,63,0.15)` }}>
+    <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: GL, border: `2px solid ${G}`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+      <svg width="24" height="24" fill="none" stroke={G} strokeWidth="2.5" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+    </div>
+    <p style={{ color: GD, fontWeight: 800, fontSize: '18px', margin: '0 0 6px' }}>TMY Generation Complete</p>
+    <p style={{ color: '#6b7280', fontSize: '14px', margin: '0 0 24px' }}>Your files are ready. Explore the results or download everything.</p>
+
+    <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+
+      {/* See Results */}
+      <button
+        onClick={() => router.push(`/results?job_id=${jobId}`)}
+        style={{ background: `linear-gradient(135deg, ${G}, ${GD})`, color: 'white', border: 'none', padding: '13px 32px', borderRadius: '12px', fontSize: '15px', fontWeight: 700, cursor: 'pointer', boxShadow: `0 4px 14px rgba(141,198,63,0.35)`, display: 'flex', alignItems: 'center', gap: '8px' }}
+        onMouseEnter={e => (e.currentTarget.style.opacity = '0.9')}
+        onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+      >
+         See Results
+      </button>
+
+      {/* Download */}
+      <button
+        onClick={async () => {
+          try {
+            const res = await downloadJob(jobId);
+            const url = window.URL.createObjectURL(new Blob([res.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `TMY_${job.site_name}.zip`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+          } catch (err) { alert('Download failed. Please try again.'); }
+        }}
+        style={{ background: 'white', color: GD, border: `2px solid ${G}`, padding: '13px 32px', borderRadius: '12px', fontSize: '15px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+        onMouseEnter={e => (e.currentTarget.style.background = GL)}
+        onMouseLeave={e => (e.currentTarget.style.background = 'white')}
+      >
+        ⬇ Download Results
+      </button>
+
+    </div>
+  </div>
+)}
           </>
         )}
       </div>

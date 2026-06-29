@@ -854,20 +854,29 @@ export default function ResultsPage() {
   }, [jobId]);
 
   const handleDownload = async () => {
-    setDlLoading(true);
-    try {
-      const res  = await downloadJob(jobId);
-      const url  = window.URL.createObjectURL(new Blob([res.data]));
-      const link = document.createElement('a');
-      link.href  = url;
-      link.setAttribute('download', `TMY_${job?.site_name ?? jobId}.zip`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
-    } catch { alert('Download failed. Please try again.'); }
-    finally  { setDlLoading(false); }
-  };
+  setDlLoading(true);
+  try {
+    const token = localStorage.getItem('access_token') || '';
+    const response = await fetch(
+      `${BASE}/api/tmy/download/${jobId}/`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    if (!response.ok) throw new Error('Download failed');
+    const blob = await response.blob();
+    const url  = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href  = url;
+    link.setAttribute('download', `TMY_${job?.site_name ?? jobId}.zip`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  } catch {
+    alert('Download failed. Please try again.');
+  } finally {
+    setDlLoading(false);
+  }
+};
 
   const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
     { id: 'summary',  label: 'Summary',     icon: Icon.summary  },

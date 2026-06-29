@@ -137,5 +137,15 @@ export const getAllJobs = () => API.get('/api/tmy/all/');
 // };
 
 
-export const downloadJob = (jobId) =>
-  API.get(`/api/tmy/download/${jobId}/`, { responseType: 'blob' });
+export const downloadJob = async (jobId) => {
+  const token = localStorage.getItem('access_token');
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/tmy/download/${jobId}/`,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+  if (!response.ok) throw new Error('Download failed');
+  const blob = await response.blob();
+  return { data: blob };
+};

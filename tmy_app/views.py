@@ -13,7 +13,7 @@ import zipfile
 import glob
 import pandas as pd
 from django.http import FileResponse, HttpResponse
-
+import tempfile
 
 def _resolve_folder(raw_path: str) -> str:
     if os.path.isabs(raw_path):
@@ -157,7 +157,10 @@ class TMYDownloadView(APIView):
         if not os.path.exists(result_folder):
             return Response({'error': f'Result folder not found: {result_folder}'}, status=404)
 
-        zip_path = f'/tmp/TMY_{job.site_name}_{job_id}.zip'
+        zip_path = os.path.join(
+    tempfile.gettempdir(),
+    f'TMY_{job.site_name}_{job_id}.zip'
+)
         with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
             for root, dirs, files in os.walk(result_folder):
                 for file in files:
@@ -165,9 +168,14 @@ class TMYDownloadView(APIView):
                     arcname   = os.path.relpath(file_path, result_folder)
                     zipf.write(file_path, arcname)
 
-        response = FileResponse(open(zip_path, 'rb'), content_type='application/zip')
+        # response = FileResponse(open(zip_path, 'rb'), content_type='application/zip')
+        # response['Content-Disposition'] = f'attachment; filename="TMY_{job.site_name}.zip"'
+        with open(zip_path, 'rb') as f:
+            response = HttpResponse(f.read(), content_type='application/zip')
         response['Content-Disposition'] = f'attachment; filename="TMY_{job.site_name}.zip"'
+        response['Access-Control-Expose-Headers'] = 'Content-Disposition'
         return response
+
 
 
 class TMYResultsView(APIView):

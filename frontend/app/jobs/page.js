@@ -38,13 +38,14 @@ export default function JobsPage() {
     try {
       const res = await getAllJobs();
       setJobs(res.data.jobs);
-      console.log(res.data.jobs);
     } catch (err) {
       setError('Failed to load jobs history');
     } finally {
       setLoading(false);
     }
   };
+
+  const isDataOnly = (job) => job.selected_files && job.selected_files.length > 0;
 
   return (
     <div style={{ minHeight: '100vh', background: GL }}>
@@ -103,14 +104,13 @@ export default function JobsPage() {
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
               <thead>
                 <tr style={{ background: GL, borderBottom: `1px solid ${GB}` }}>
-                  {['ID', 'Site', 'Coordinates', 'Period', 'Status', 'Date', 'Action'].map(h => (
+                  {['ID', 'Site', 'Coordinates', 'Period', 'Type', 'Status', 'Date', 'Action'].map(h => (
                     <th key={h} style={{ textAlign: 'left', padding: '12px 18px', color: GD, fontWeight: 700, fontSize: '13px' }}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {jobs.map((job, i) => (
-                  
                   <tr key={job.id}
                     style={{ borderBottom: i < jobs.length - 1 ? `1px solid ${GL}` : 'none' }}
                     onMouseEnter={e => e.currentTarget.style.background = GL}
@@ -120,6 +120,20 @@ export default function JobsPage() {
                     <td style={{ padding: '14px 18px', fontWeight: 600, color: '#1f2937' }}>{job.site_name}</td>
                     <td style={{ padding: '14px 18px', color: '#6b7280', fontFamily: 'monospace', fontSize: '13px' }}>{job.latitude}, {job.longitude}</td>
                     <td style={{ padding: '14px 18px', color: '#6b7280' }}>{job.start_year} → {job.end_year}</td>
+
+                    {/* Type column */}
+                    <td style={{ padding: '14px 18px' }}>
+                      {isDataOnly(job) ? (
+                        <span style={{ padding: '4px 10px', borderRadius: '999px', fontSize: '12px', fontWeight: 600, background: '#eff6ff', color: '#1d4ed8' }}>
+                          Data Only
+                        </span>
+                      ) : (
+                        <span style={{ padding: '4px 10px', borderRadius: '999px', fontSize: '12px', fontWeight: 600, background: '#EAF3DE', color: GD }}>
+                          Full TMY
+                        </span>
+                      )}
+                    </td>
+
                     <td style={{ padding: '14px 18px' }}>
                       <span style={{ padding: '4px 10px', borderRadius: '999px', fontSize: '12px', fontWeight: 600, background: STATUS_STYLES[job.status]?.bg || '#f3f4f6', color: STATUS_STYLES[job.status]?.color || '#6b7280' }}>
                         {job.status}
@@ -130,19 +144,17 @@ export default function JobsPage() {
                     </td>
                     <td style={{ padding: '14px 18px' }}>
                       <button onClick={() => {
-  if (job.selected_files && job.selected_files.length > 0) {
-    router.push(`/download-status?job_id=${job.id}&type=download`);
-  } else {
-    router.push(`/status?job_id=${job.id}`);
-  }
-}} style={{ color: G, fontWeight: 600, fontSize: '13px', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>
+                        if (isDataOnly(job)) {
+                          router.push(`/download-status?job_id=${job.id}&type=download`);
+                        } else {
+                          router.push(`/status?job_id=${job.id}`);
+                        }
+                      }} style={{ color: G, fontWeight: 600, fontSize: '13px', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>
                         View →
                       </button>
                     </td>
                   </tr>
-                  
                 ))}
-                
               </tbody>
             </table>
           </div>
